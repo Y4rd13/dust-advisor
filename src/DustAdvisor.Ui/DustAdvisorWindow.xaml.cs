@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using DustAdvisor.Algorithm.Domain;
 using DustAdvisor.Ui.Export;
 
@@ -62,7 +61,6 @@ namespace DustAdvisor.Ui
             ExportCsvButton.Click += (s, e) => SaveAs("CSV (*.csv)|*.csv", DustAdvisor.Ui.Export.CsvExporter.ToCsv(BuildFilteredPlan()));
             ExportJsonButton.Click += (s, e) => SaveAs("JSON (*.json)|*.json", DustAdvisor.Ui.Export.JsonExporter.ToJson(BuildFilteredPlan()));
 
-            CompositionTarget.Rendering += (s, e) => UpdateConfirmBar();
             ConfirmButton.Click += (s, e) => ConfirmCart();
             ClearCartButton.Click += (s, e) => ClearCart();
 
@@ -100,6 +98,11 @@ namespace DustAdvisor.Ui
                 : $"{plan.TotalDust:n0} dust";
             WarningCountLabel.Text = plan.Warnings.Count > 0 ? $"{plan.Warnings.Count} warning(s)" : string.Empty;
             ItemsGrid.ItemsSource = visible.Select(i => new DustItemRow(i)).ToList();
+            foreach (var row in (System.Collections.Generic.IEnumerable<DustItemRow>)ItemsGrid.ItemsSource)
+            {
+                row.PropertyChanged += Row_PropertyChanged;
+            }
+            UpdateConfirmBar();
             StatusFooter.Text = $"Session: {_ledger.Entries.Count} batches → {_ledger.TotalDust:n0} dust   |   Visible: {visible.Count} of {plan.Items.Count} plan rows";
             UpdateWastedDustHint();
         }
@@ -327,6 +330,12 @@ namespace DustAdvisor.Ui
             WastedDustLabel.Text = delta > 0
                 ? $"+{delta:n0} dust available if you switch to MaxDust"
                 : string.Empty;
+        }
+
+        private void Row_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(DustItemRow.IsSelected))
+                UpdateConfirmBar();
         }
 
         private void DustAdvisorWindow_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
