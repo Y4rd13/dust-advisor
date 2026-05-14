@@ -99,6 +99,7 @@ namespace DustAdvisor.Ui
                 : $"{plan.TotalDust:n0} dust";
             WarningCountLabel.Text = plan.Warnings.Count > 0 ? $"{plan.Warnings.Count} warning(s)" : string.Empty;
             ItemsGrid.ItemsSource = visible.Select(i => new DustItemRow(i)).ToList();
+            StatusFooter.Text = $"Session: {_ledger.Entries.Count} batches → {_ledger.TotalDust:n0} dust   |   Visible: {visible.Count} of {plan.Items.Count} plan rows";
         }
 
         private IEnumerable<DustItem> ApplyFilters(IReadOnlyList<DustItem> items)
@@ -203,6 +204,7 @@ namespace DustAdvisor.Ui
                 undo: () => { _ledger.Undo(); foreach (var r in selected) r.IsSelected = true; });
             foreach (var r in selected) r.IsSelected = false;
             _toasts.Show($"Marked {cardIds.Count} cards for disenchant ({dust:n0} dust)", onClick: () => { _undo.Undo(); });
+            Render(_plan);
         }
 
         private void ClearCart()
@@ -211,6 +213,7 @@ namespace DustAdvisor.Ui
             {
                 foreach (var r in rows) r.IsSelected = false;
             }
+            Render(_plan);
         }
 
         private void DataGridRow_ContextMenuOpening(object sender, System.Windows.Controls.ContextMenuEventArgs e)
@@ -278,6 +281,7 @@ namespace DustAdvisor.Ui
                 _neverRepo.Save(_neverSuggestPath, rollback);
                 _toasts.Show($"Restored: {cardId}");
             });
+            Render(_plan);
         }
 
         private void ContextNeverRegular_Click(object sender, System.Windows.RoutedEventArgs e)
