@@ -208,5 +208,60 @@ namespace DustAdvisor.Algorithm.Tests
             item.DustGained.Should().Be(400);
             item.InRefundWindow.Should().BeTrue();
         }
+
+        [Fact]
+        public void SafeOnly_skips_Standard_legal_cards_by_default()
+        {
+            // Default options: KeepStandardLegal = true, Strategy = SafeOnly.
+            // 3 standard-legal rares; nothing should be dusted, and a warning should be emitted.
+            var meta = CardFixtures.RareStandard("STD_001", 500);
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("STD_001", regular: 3) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions(strategy: Strategy.SafeOnly, keepStandardLegal: true));
+
+            var plan = new Advisor().Recommend(inputs);
+            plan.Items.Should().BeEmpty();
+            plan.Warnings.Should().ContainSingle(w => w.CardId == "STD_001");
+        }
+
+        [Fact]
+        public void MaxDust_still_dusts_Standard_legal_cards_but_warns()
+        {
+            var meta = CardFixtures.RareStandard("STD_002", 501);
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("STD_002", regular: 3) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions(strategy: Strategy.MaxDust));
+
+            var plan = new Advisor().Recommend(inputs);
+            plan.Items.Should().ContainSingle()
+                .Which.IsStandardLegal.Should().BeTrue();
+            plan.Warnings.Should().ContainSingle(w => w.CardId == "STD_002");
+        }
+
+        [Fact]
+        public void RefundOnly_filters_out_cards_not_in_refund_window()
+        {
+            var refunded = CardFixtures.CommonWild("R_001", 600);
+            var notRefunded = CardFixtures.CommonWild("R_002", 601);
+            var inputs = new AdvisorInputs(
+                collection: new[]
+                {
+                    new CollectionEntry("R_001", regular: 5),
+                    new CollectionEntry("R_002", regular: 5),
+                },
+                meta: new[] { refunded, notRefunded },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string> { "R_001" },
+                options: new AdvisorOptions(strategy: Strategy.RefundOnly));
+
+            var plan = new Advisor().Recommend(inputs);
+            plan.Items.Should().ContainSingle().Which.CardId.Should().Be("R_001");
+        }
     }
 }
