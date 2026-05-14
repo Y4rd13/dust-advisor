@@ -45,6 +45,8 @@ namespace DustAdvisor.Ui
                 box.Unchecked += refilter;
             }
 
+            TargetDustBox.TextChanged += (s, e) => Render(_plan);
+
             ExportCsvButton.Click += (s, e) => SaveAs("CSV (*.csv)|*.csv", DustAdvisor.Ui.Export.CsvExporter.ToCsv(BuildFilteredPlan()));
             ExportJsonButton.Click += (s, e) => SaveAs("JSON (*.json)|*.json", DustAdvisor.Ui.Export.JsonExporter.ToJson(BuildFilteredPlan()));
         }
@@ -52,11 +54,32 @@ namespace DustAdvisor.Ui
         public void Render(DustPlan plan)
         {
             if (!_ready) return;
-            var visible = ApplyFilters(plan.Items).ToList();
+            var filtered = ApplyFilters(plan.Items).ToList();
+
+            IReadOnlyList<DustItem> visible;
+            int? target = null;
+            if (int.TryParse(TargetDustBox.Text, out int t) && t > 0)
+            {
+                target = t;
+                var optimized = DustAdvisor.Algorithm.TargetDustOptimizer.Optimize(filtered, t);
+                visible = optimized.Items;
+                TargetStatusLabel.Text = optimized.TargetMet
+                    ? $"{optimized.AchievedDust:n0} / {t:n0} target ({visible.Count} cards)"
+                    : $"{optimized.AchievedDust:n0} / {t:n0} target — not enough safe dust";
+                TargetStatusLabel.Foreground = optimized.TargetMet
+                    ? System.Windows.Media.Brushes.DarkGreen
+                    : System.Windows.Media.Brushes.OrangeRed;
+            }
+            else
+            {
+                visible = filtered;
+                TargetStatusLabel.Text = string.Empty;
+            }
+
             var visibleDust = visible.Sum(i => i.DustGained);
-            TotalDustLabel.Text = visible.Count == plan.Items.Count
-                ? $"{plan.TotalDust:n0} dust"
-                : $"{visibleDust:n0} dust  (of {plan.TotalDust:n0} unfiltered)";
+            TotalDustLabel.Text = (target.HasValue || visible.Count != plan.Items.Count)
+                ? $"{visibleDust:n0} dust  (of {plan.TotalDust:n0} unfiltered)"
+                : $"{plan.TotalDust:n0} dust";
             WarningCountLabel.Text = plan.Warnings.Count > 0 ? $"{plan.Warnings.Count} warning(s)" : string.Empty;
             ItemsGrid.ItemsSource = visible.Select(i => new DustItemRow(i)).ToList();
         }
