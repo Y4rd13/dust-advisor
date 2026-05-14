@@ -36,13 +36,15 @@ namespace DustAdvisor.Hdt
                     hsj,
                     new DustAdvisor.Data.UncraftableRepository(),
                     new DustAdvisor.Data.RefundRepository(),
-                    new DustAdvisor.Data.NeverSuggestRepository());
+                    new DustAdvisor.Data.NeverSuggestRepository(),
+                    new DustAdvisor.Data.MetaTierRepository());
 
                 var data = await loader.LoadAsync(
                     locale: locale,
                     uncraftablePath: PluginPaths.UncraftableFile,
                     refundPath: PluginPaths.RefundFile,
                     neverSuggestPath: PluginPaths.NeverSuggestFile,
+                    metaTiersPath: PluginPaths.MetaTiersFile,
                     now: System.DateTimeOffset.UtcNow,
                     ct: System.Threading.CancellationToken.None);
 

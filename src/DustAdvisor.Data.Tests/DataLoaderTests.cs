@@ -22,13 +22,15 @@ namespace DustAdvisor.Data.Tests
                 new HearthstoneJsonClient(new HearthstoneJsonClientTests.LocalFileFetcherPublic(cardsPath)),
                 new UncraftableRepository(),
                 new RefundRepository(),
-                new NeverSuggestRepository());
+                new NeverSuggestRepository(),
+                new MetaTierRepository());
 
             var snapshot = await loader.LoadAsync(
                 locale: "enUS",
                 uncraftablePath: unPath,
                 refundPath: refundPath,
                 neverSuggestPath: neverPath,
+                metaTiersPath: Path.Combine(AppContext.BaseDirectory, "Fixtures", "meta_tiers.json"),
                 now: new DateTimeOffset(2026, 5, 13, 0, 0, 0, TimeSpan.Zero),
                 ct: CancellationToken.None);
 
