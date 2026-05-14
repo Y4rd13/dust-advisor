@@ -1,14 +1,24 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using DustAdvisor.Algorithm.Domain;
 
 namespace DustAdvisor.Ui
 {
+    public enum FormatFilter
+    {
+        All,
+        Standard,
+        Wild,
+    }
+
     public partial class DustAdvisorWindow : Window
     {
         private DustPlan _plan;
         private readonly Func<AdvisorOptions, DustPlan> _recompute;
+        private bool _ready;
 
         public DustAdvisorWindow(DustPlan plan, Func<AdvisorOptions, DustPlan> recompute)
         {
@@ -18,19 +28,66 @@ namespace DustAdvisor.Ui
             // RotationImminent is in the enum for future use but currently behaves like SafeOnly. Hide it.
             StrategyBox.ItemsSource = new[] { Strategy.SafeOnly, Strategy.MaxDust, Strategy.RefundOnly };
             StrategyBox.SelectedItem = Strategy.SafeOnly;
+            FormatBox.ItemsSource = Enum.GetValues(typeof(FormatFilter));
+            FormatBox.SelectedItem = FormatFilter.All;
+            _ready = true;
             Render(plan);
+
             StrategyBox.SelectionChanged += (s, e) => Recompute();
             KeepStandardBox.Checked += (s, e) => Recompute();
             KeepStandardBox.Unchecked += (s, e) => Recompute();
-            ExportCsvButton.Click += (s, e) => SaveAs("CSV (*.csv)|*.csv", DustAdvisor.Ui.Export.CsvExporter.ToCsv(_plan));
-            ExportJsonButton.Click += (s, e) => SaveAs("JSON (*.json)|*.json", DustAdvisor.Ui.Export.JsonExporter.ToJson(_plan));
+
+            RoutedEventHandler refilter = (s, e) => Render(_plan);
+            FormatBox.SelectionChanged += (s, e) => Render(_plan);
+            foreach (var box in new[] { RarityCommonBox, RarityRareBox, RarityEpicBox, RarityLegendaryBox, ShowNormalBox, ShowGoldenBox })
+            {
+                box.Checked += refilter;
+                box.Unchecked += refilter;
+            }
+
+            ExportCsvButton.Click += (s, e) => SaveAs("CSV (*.csv)|*.csv", DustAdvisor.Ui.Export.CsvExporter.ToCsv(BuildFilteredPlan()));
+            ExportJsonButton.Click += (s, e) => SaveAs("JSON (*.json)|*.json", DustAdvisor.Ui.Export.JsonExporter.ToJson(BuildFilteredPlan()));
         }
 
         public void Render(DustPlan plan)
         {
-            TotalDustLabel.Text = $"{plan.TotalDust:n0} dust";
+            if (!_ready) return;
+            var visible = ApplyFilters(plan.Items).ToList();
+            var visibleDust = visible.Sum(i => i.DustGained);
+            TotalDustLabel.Text = visible.Count == plan.Items.Count
+                ? $"{plan.TotalDust:n0} dust"
+                : $"{visibleDust:n0} dust  (of {plan.TotalDust:n0} unfiltered)";
             WarningCountLabel.Text = plan.Warnings.Count > 0 ? $"{plan.Warnings.Count} warning(s)" : string.Empty;
-            ItemsGrid.ItemsSource = plan.Items.Select(i => new DustItemRow(i)).ToList();
+            ItemsGrid.ItemsSource = visible.Select(i => new DustItemRow(i)).ToList();
+        }
+
+        private IEnumerable<DustItem> ApplyFilters(IReadOnlyList<DustItem> items)
+        {
+            var format = (FormatFilter)FormatBox.SelectedItem;
+            var rarities = new HashSet<Rarity>();
+            if (RarityCommonBox.IsChecked == true) rarities.Add(Rarity.Common);
+            if (RarityRareBox.IsChecked == true) rarities.Add(Rarity.Rare);
+            if (RarityEpicBox.IsChecked == true) rarities.Add(Rarity.Epic);
+            if (RarityLegendaryBox.IsChecked == true) rarities.Add(Rarity.Legendary);
+            bool showNormal = ShowNormalBox.IsChecked == true;
+            bool showGolden = ShowGoldenBox.IsChecked == true;
+
+            foreach (var i in items)
+            {
+                if (!rarities.Contains(i.Rarity)) continue;
+                if (format == FormatFilter.Standard && !i.IsStandardLegal) continue;
+                if (format == FormatFilter.Wild && i.IsStandardLegal) continue;
+                if (!showNormal && i.RegularToDust > 0 && i.GoldenToDust == 0) continue;
+                if (!showGolden && i.GoldenToDust > 0 && i.RegularToDust == 0) continue;
+                if (!showNormal && !showGolden) continue;
+                yield return i;
+            }
+        }
+
+        private DustPlan BuildFilteredPlan()
+        {
+            var visible = ApplyFilters(_plan.Items).ToList();
+            return new DustPlan(visible, _plan.Warnings, visible.Sum(i => i.DustGained));
         }
 
         private void Recompute()
