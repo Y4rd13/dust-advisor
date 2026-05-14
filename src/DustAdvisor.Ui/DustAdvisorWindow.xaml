@@ -63,6 +63,7 @@
           <DataGridTextColumn Header="Reg" Binding="{Binding RegularToDust}" Width="50"/>
           <DataGridTextColumn Header="Gold" Binding="{Binding GoldenToDust}" Width="55"/>
           <DataGridTextColumn Header="Dust" Binding="{Binding DustGained}" Width="80"/>
+          <DataGridTextColumn Header="In Decks" Binding="{Binding InDeckCount}" Width="60"/>
           <DataGridTextColumn Header="Flag" Binding="{Binding Flag}" Width="100"/>
         </DataGrid.Columns>
       </DataGrid>

@@ -37,7 +37,7 @@ namespace DustAdvisor.Ui
             _neverSuggestPath = neverSuggestPath;
             _toasts = new ToastHost(ToastContainer);
             // RotationImminent is in the enum for future use but currently behaves like SafeOnly. Hide it.
-            StrategyBox.ItemsSource = new[] { Strategy.SafeOnly, Strategy.MaxDust, Strategy.RefundOnly };
+            StrategyBox.ItemsSource = new[] { Strategy.SafeOnly, Strategy.SafeOnlyUnused, Strategy.MaxDust, Strategy.RefundOnly };
             StrategyBox.SelectedItem = Strategy.SafeOnly;
             FormatBox.ItemsSource = Enum.GetValues(typeof(FormatFilter));
             FormatBox.SelectedItem = FormatFilter.All;
