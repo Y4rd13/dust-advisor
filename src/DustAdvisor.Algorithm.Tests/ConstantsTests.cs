@@ -46,5 +46,15 @@ namespace DustAdvisor.Algorithm.Tests
         {
             Constants.PlaysetSize(r).Should().Be(expected);
         }
+
+        [Theory]
+        [InlineData(Rarity.Common, 400)]
+        [InlineData(Rarity.Rare, 800)]
+        [InlineData(Rarity.Epic, 1600)]
+        [InlineData(Rarity.Legendary, 3200)]
+        public void GoldenCraftCost_returns_canonical_values(Rarity r, int expected)
+        {
+            Constants.GoldenCraftCost(r).Should().Be(expected);
+        }
     }
 }

@@ -45,5 +45,17 @@ namespace DustAdvisor.Algorithm
         {
             return r == Rarity.Legendary ? 1 : 2;
         }
+
+        public static int GoldenCraftCost(Rarity r)
+        {
+            switch (r)
+            {
+                case Rarity.Common: return 400;
+                case Rarity.Rare: return 800;
+                case Rarity.Epic: return 1600;
+                case Rarity.Legendary: return 3200;
+                default: throw new ArgumentOutOfRangeException(nameof(r), r, "Free/unknown rarity has no golden craft cost");
+            }
+        }
     }
 }

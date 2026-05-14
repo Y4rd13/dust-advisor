@@ -41,8 +41,11 @@ namespace DustAdvisor.Algorithm
                 int dustRegular = System.Math.Max(0, effectiveRegular - keepRegular);
                 int dustGolden = System.Math.Max(0, effectiveGolden - keepGolden);
 
-                int dustGained = dustRegular * Constants.DisenchantRegular(meta.Rarity)
-                               + dustGolden * Constants.DisenchantGolden(meta.Rarity);
+                bool refund = inputs.RefundWindow.Contains(meta.CardId);
+                int unitRegular = refund ? Constants.CraftCost(meta.Rarity) : Constants.DisenchantRegular(meta.Rarity);
+                int unitGolden = refund ? Constants.GoldenCraftCost(meta.Rarity) : Constants.DisenchantGolden(meta.Rarity);
+
+                int dustGained = dustRegular * unitRegular + dustGolden * unitGolden;
 
                 if (dustRegular > 0 || dustGolden > 0)
                 {
@@ -53,7 +56,7 @@ namespace DustAdvisor.Algorithm
                         regularToDust: dustRegular,
                         goldenToDust: dustGolden,
                         dustGained: dustGained,
-                        inRefundWindow: false,
+                        inRefundWindow: refund,
                         isStandardLegal: meta.Set.IsStandardLegal));
                     totalDust += dustGained;
                 }
