@@ -16,20 +16,21 @@ namespace DustAdvisor.Ui
         public int RegularToDust { get; }
         public int GoldenToDust { get; }
         public int DustGained { get; }
+        public int InDeckCount { get; }
         public string Flag { get; }
-
-        private bool _isSelected;
-        public bool IsSelected
-        {
-            get { return _isSelected; }
-            set { _isSelected = value; PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(IsSelected))); }
-        }
 
         private BitmapImage _art;
         public BitmapImage Art
         {
             get { return _art; }
             private set { _art = value; PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(Art))); }
+        }
+
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set { _isSelected = value; PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(IsSelected))); }
         }
 
         public DustItemRow(DustItem item)
@@ -40,7 +41,10 @@ namespace DustAdvisor.Ui
             RegularToDust = item.RegularToDust;
             GoldenToDust = item.GoldenToDust;
             DustGained = item.DustGained;
-            Flag = item.InRefundWindow ? "REFUND"
+            InDeckCount = item.InDeckCount;
+            // Flag precedence: IN-DECK > REFUND > STANDARD > WILD
+            Flag = item.InDeckCount > 0 ? "IN-DECK"
+                 : item.InRefundWindow ? "REFUND"
                  : item.IsStandardLegal ? "STANDARD"
                  : "WILD";
         }
@@ -51,7 +55,6 @@ namespace DustAdvisor.Ui
             var bytes = await cache.GetAsync(CardId, size, System.Threading.CancellationToken.None).ConfigureAwait(false);
             if (bytes == null) return;
 
-            // Decode on a background thread; assign on UI thread.
             BitmapImage bmp = null;
             await Task.Run(() =>
             {
