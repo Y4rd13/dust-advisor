@@ -71,7 +71,30 @@ namespace DustAdvisor.Hdt
                 int missingMetaCount = 0;
                 foreach (var c in collection) if (!metaIds.Contains(c.CardId)) missingMetaCount++;
 
-                var deckUsage = BuildDeckUsage();
+                var deckCardIndex = BuildDeckCardIndex();
+                var deckStats = BuildDeckStats();
+
+                // Keep the existing deckUsage shape (Dictionary<string,int>) for AdvisorInputs.DeckUsage.
+                var deckUsage = new System.Collections.Generic.Dictionary<string, int>();
+                foreach (var kv in deckCardIndex) deckUsage[kv.Key] = kv.Value.Count;
+
+                // Compute win-rate per card: sum wins+totals across decks containing the card; threshold 20 games.
+                var winRateByCard = new System.Collections.Generic.Dictionary<string, double>();
+                foreach (var kv in deckCardIndex)
+                {
+                    int wins = 0, total = 0;
+                    foreach (var deckId in kv.Value)
+                    {
+                        if (deckStats.TryGetValue(deckId, out var ws))
+                        {
+                            wins += ws.wins;
+                            total += ws.total;
+                        }
+                    }
+                    if (total >= 20)
+                        winRateByCard[kv.Key] = (double)wins / total;
+                }
+
                 var rotatingCardIds = new System.Collections.Generic.HashSet<string>();
                 foreach (var m in data.Meta)
                     if (DustAdvisor.Data.StandardSets.RotatingNextYear.Contains(m.Set.Code))
@@ -80,7 +103,7 @@ namespace DustAdvisor.Hdt
                 Func<DustAdvisor.Algorithm.Domain.AdvisorOptions, DustAdvisor.Algorithm.Domain.DustPlan> recompute = opts =>
                 {
                     var ins = new DustAdvisor.Algorithm.AdvisorInputs(
-                        collection, data.Meta, data.Uncraftable, data.RefundWindow, opts, deckUsage, rotatingCardIds, data.MetaTiers);
+                        collection, data.Meta, data.Uncraftable, data.RefundWindow, opts, deckUsage, rotatingCardIds, data.MetaTiers, winRateByCard);
                     var plan = new DustAdvisor.Algorithm.Advisor().Recommend(ins);
                     if (missingMetaCount > 0)
                     {
@@ -106,6 +129,75 @@ namespace DustAdvisor.Hdt
             {
                 System.Windows.MessageBox.Show(ex.ToString(), "Dust Advisor: error");
             }
+        }
+
+        private static System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IReadOnlyList<System.Guid>> BuildDeckCardIndex()
+        {
+            var index = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<System.Guid>>();
+            try
+            {
+                var decks = Hearthstone_Deck_Tracker.DeckList.Instance.Decks;
+                if (decks == null) return Wrap(index);
+                foreach (var deck in decks)
+                {
+                    if (deck == null) continue;
+                    if (deck.IsArenaDeck) continue;
+                    if (deck.Archived) continue;
+                    var version = deck.GetSelectedDeckVersion();
+                    if (version?.Cards == null) continue;
+                    foreach (var card in version.Cards)
+                    {
+                        if (string.IsNullOrEmpty(card.Id)) continue;
+                        if (!index.TryGetValue(card.Id, out var list))
+                        {
+                            list = new System.Collections.Generic.List<System.Guid>();
+                            index[card.Id] = list;
+                        }
+                        if (!list.Contains(deck.DeckId)) list.Add(deck.DeckId);
+                    }
+                }
+            }
+            catch
+            {
+                // fall through to empty index
+            }
+            return Wrap(index);
+        }
+
+        private static System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IReadOnlyList<System.Guid>> Wrap(
+            System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<System.Guid>> source)
+        {
+            var result = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IReadOnlyList<System.Guid>>(source.Count);
+            foreach (var kv in source) result[kv.Key] = kv.Value;
+            return result;
+        }
+
+        private static System.Collections.Generic.IReadOnlyDictionary<System.Guid, (int wins, int total)> BuildDeckStats()
+        {
+            var stats = new System.Collections.Generic.Dictionary<System.Guid, (int wins, int total)>();
+            try
+            {
+                var allStats = Hearthstone_Deck_Tracker.Stats.DeckStatsList.Instance.DeckStats;
+                if (allStats == null) return stats;
+                // DeckStats is Dictionary<Guid, DeckStats> — iterate values
+                foreach (var ds in allStats.Values)
+                {
+                    if (ds == null) continue;
+                    if (ds.Games == null) continue;
+                    int wins = 0, total = 0;
+                    foreach (var g in ds.Games)
+                    {
+                        total++;
+                        if (g.Result == Hearthstone_Deck_Tracker.Enums.GameResult.Win) wins++;
+                    }
+                    stats[ds.DeckId] = (wins, total);
+                }
+            }
+            catch
+            {
+                // fall through to empty stats
+            }
+            return stats;
         }
 
         private static System.Collections.Generic.IReadOnlyDictionary<string, int> BuildDeckUsage()
