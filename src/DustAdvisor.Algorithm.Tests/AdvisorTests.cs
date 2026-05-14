@@ -288,5 +288,39 @@ namespace DustAdvisor.Algorithm.Tests
             var plan = new Advisor().Recommend(inputs);
             plan.Items.Select(i => i.CardId).Should().ContainInOrder("A", "B", "C");
         }
+
+        [Fact]
+        public void Realistic_mixed_collection_produces_correct_plan()
+        {
+            // Setup: 5 cards in collection.
+            var freeCommon = new CardMeta("FREE_001", 9000, "Free Common", Rarity.Free,
+                new CardSet("LEGACY", isStandardLegal: false), isCollectible: true);
+            var coreCommon = CardFixtures.CoreCard("CORE_001", 9001);
+            var wildRare2 = new CardMeta("WILD_RARE_001", 9003, "Wild Rare", Rarity.Rare,
+                new CardSet("OG", isStandardLegal: false), isCollectible: true);
+            var wildLeg = CardFixtures.LegendaryWild("WILD_LEG", 9004);
+            var refundCommon = CardFixtures.CommonWild("RF_001", 9005);
+
+            var inputs = new AdvisorInputs(
+                collection: new[]
+                {
+                    new CollectionEntry("FREE_001", regular: 10),     // skipped (Free)
+                    new CollectionEntry("CORE_001", regular: 10),     // skipped (Core)
+                    new CollectionEntry("WILD_RARE_001", regular: 4), // dust 2 @ 20 = 40
+                    new CollectionEntry("WILD_LEG", regular: 1, golden: 1), // playset=1; keep golden; dust 1 reg = 400
+                    new CollectionEntry("RF_001", regular: 4),        // dust 2 @ 40 (refund) = 80
+                },
+                meta: new[] { freeCommon, coreCommon, wildRare2, wildLeg, refundCommon },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string> { "RF_001" },
+                options: new AdvisorOptions(strategy: Strategy.SafeOnly));
+
+            var plan = new Advisor().Recommend(inputs);
+            plan.TotalDust.Should().Be(40 + 400 + 80);
+            plan.Items.Should().HaveCount(3);
+            // First item must be the refund-window card (RF_001).
+            plan.Items[0].CardId.Should().Be("RF_001");
+            plan.Items[0].InRefundWindow.Should().BeTrue();
+        }
     }
 }
