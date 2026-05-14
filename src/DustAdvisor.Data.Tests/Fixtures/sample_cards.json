@@ -1,0 +1,6 @@
+[
+  { "id": "EX1_001", "dbfId": 1, "name": "Common Wild", "rarity": "COMMON", "set": "OG", "collectible": true },
+  { "id": "STD_001", "dbfId": 2, "name": "Standard Rare", "rarity": "RARE", "set": "BADLANDS", "collectible": true },
+  { "id": "CORE_001", "dbfId": 3, "name": "Core Common", "rarity": "COMMON", "set": "CORE", "collectible": true },
+  { "id": "NON_COLL", "dbfId": 4, "name": "Hero Power", "rarity": "FREE", "set": "HERO_SKINS", "collectible": false }
+]
