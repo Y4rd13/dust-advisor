@@ -34,7 +34,20 @@
       <CheckBox x:Name="ShowGoldenBox" Content="Golden" VerticalAlignment="Center" IsChecked="True"/>
     </StackPanel>
 
-    <DataGrid x:Name="ItemsGrid" Grid.Row="2" Margin="8" AutoGenerateColumns="False" IsReadOnly="True">
+    <DataGrid x:Name="ItemsGrid" Grid.Row="2" Margin="8" AutoGenerateColumns="False" IsReadOnly="True"
+              ToolTipService.InitialShowDelay="300" ToolTipService.ShowDuration="20000">
+      <DataGrid.RowStyle>
+        <Style TargetType="DataGridRow">
+          <Setter Property="ToolTip">
+            <Setter.Value>
+              <ToolTip Background="Transparent" BorderThickness="0" Placement="Mouse">
+                <Image Source="{Binding Art}" Width="260" Height="380" Stretch="Uniform"/>
+              </ToolTip>
+            </Setter.Value>
+          </Setter>
+          <EventSetter Event="MouseEnter" Handler="DataGridRow_MouseEnter"/>
+        </Style>
+      </DataGrid.RowStyle>
       <DataGrid.Columns>
         <DataGridTextColumn Header="Card" Binding="{Binding Name}" Width="220"/>
         <DataGridTextColumn Header="Rarity" Binding="{Binding Rarity}" Width="90"/>
