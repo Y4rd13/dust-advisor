@@ -34,12 +34,14 @@ namespace DustAdvisor.Hdt
                 var loader = new DustAdvisor.Data.DataLoader(
                     hsj,
                     new DustAdvisor.Data.UncraftableRepository(),
-                    new DustAdvisor.Data.RefundRepository());
+                    new DustAdvisor.Data.RefundRepository(),
+                    new DustAdvisor.Data.NeverSuggestRepository());
 
                 var data = await loader.LoadAsync(
                     locale: "enUS",
                     uncraftablePath: PluginPaths.UncraftableFile,
                     refundPath: PluginPaths.RefundFile,
+                    neverSuggestPath: PluginPaths.NeverSuggestFile,
                     now: System.DateTimeOffset.UtcNow,
                     ct: System.Threading.CancellationToken.None);
 
