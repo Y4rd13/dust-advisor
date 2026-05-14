@@ -80,7 +80,7 @@ namespace DustAdvisor.Hdt
                 Func<DustAdvisor.Algorithm.Domain.AdvisorOptions, DustAdvisor.Algorithm.Domain.DustPlan> recompute = opts =>
                 {
                     var ins = new DustAdvisor.Algorithm.AdvisorInputs(
-                        collection, data.Meta, data.Uncraftable, data.RefundWindow, opts, deckUsage, rotatingCardIds);
+                        collection, data.Meta, data.Uncraftable, data.RefundWindow, opts, deckUsage, rotatingCardIds, data.MetaTiers);
                     var plan = new DustAdvisor.Algorithm.Advisor().Recommend(ins);
                     if (missingMetaCount > 0)
                     {
