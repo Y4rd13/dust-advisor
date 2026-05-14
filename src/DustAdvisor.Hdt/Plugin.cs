@@ -77,7 +77,7 @@ namespace DustAdvisor.Hdt
                 var artCache = new DustAdvisor.Ui.Export.CardArtCache(
                     new DustAdvisor.Ui.HttpBinaryFetcher(),
                     PluginPaths.CardArtDir);
-                var win = new DustAdvisor.Ui.DustAdvisorWindow(initialPlan, recompute, artCache);
+                var win = new DustAdvisor.Ui.DustAdvisorWindow(initialPlan, recompute, artCache, PluginPaths.NeverSuggestFile);
                 win.Title = $"Dust Advisor — {collection.Count} cards read, {matched} matched metadata";
                 win.Show();
             }
