@@ -51,8 +51,8 @@ namespace DustAdvisor.Hdt
 
                 var plan = new DustAdvisor.Algorithm.Advisor().Recommend(inputs);
 
-                var report = $"Cards in plan: {plan.Items.Count}\nTotal dust: {plan.TotalDust}\nWarnings: {plan.Warnings.Count}";
-                System.Windows.MessageBox.Show(report, "Dust Advisor");
+                var win = new DustAdvisor.Ui.DustAdvisorWindow(plan);
+                win.Show();
             }
             catch (System.Exception ex)
             {

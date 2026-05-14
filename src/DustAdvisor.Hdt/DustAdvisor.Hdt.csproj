@@ -32,5 +32,6 @@
   <ItemGroup>
     <ProjectReference Include="..\DustAdvisor.Algorithm\DustAdvisor.Algorithm.csproj" />
     <ProjectReference Include="..\DustAdvisor.Data\DustAdvisor.Data.csproj" />
+    <ProjectReference Include="..\DustAdvisor.Ui\DustAdvisor.Ui.csproj" />
   </ItemGroup>
 </Project>

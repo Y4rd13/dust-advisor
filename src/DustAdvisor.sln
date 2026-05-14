@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DustAdvisor.Data.Tests", "D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DustAdvisor.Hdt", "DustAdvisor.Hdt\DustAdvisor.Hdt.csproj", "{B1146F6D-9335-4E47-B451-94C92C4C107F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DustAdvisor.Ui", "DustAdvisor.Ui\DustAdvisor.Ui.csproj", "{AE554A9F-D327-4E47-8F65-9870BA05A94B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{B1146F6D-9335-4E47-B451-94C92C4C107F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1146F6D-9335-4E47-B451-94C92C4C107F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1146F6D-9335-4E47-B451-94C92C4C107F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE554A9F-D327-4E47-8F65-9870BA05A94B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE554A9F-D327-4E47-8F65-9870BA05A94B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE554A9F-D327-4E47-8F65-9870BA05A94B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE554A9F-D327-4E47-8F65-9870BA05A94B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
