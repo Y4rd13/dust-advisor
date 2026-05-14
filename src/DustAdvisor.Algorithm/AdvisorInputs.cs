@@ -10,6 +10,7 @@ namespace DustAdvisor.Algorithm
         public IReadOnlyCollection<(string CardId, Premium Premium)> Uncraftable { get; }
         public IReadOnlyCollection<string> RefundWindow { get; }
         public IReadOnlyDictionary<string, int> DeckUsage { get; }
+        public IReadOnlyCollection<string> RotatingCardIds { get; }
         public AdvisorOptions Options { get; }
 
         public AdvisorInputs(
@@ -18,7 +19,8 @@ namespace DustAdvisor.Algorithm
             IReadOnlyCollection<(string, Premium)> uncraftable,
             IReadOnlyCollection<string> refundWindow,
             AdvisorOptions options,
-            IReadOnlyDictionary<string, int> deckUsage = null)
+            IReadOnlyDictionary<string, int> deckUsage = null,
+            IReadOnlyCollection<string> rotatingCardIds = null)
         {
             Collection = collection;
             Meta = meta;
@@ -26,6 +28,7 @@ namespace DustAdvisor.Algorithm
             RefundWindow = refundWindow;
             Options = options;
             DeckUsage = deckUsage ?? new Dictionary<string, int>();
+            RotatingCardIds = rotatingCardIds ?? new HashSet<string>();
         }
     }
 }

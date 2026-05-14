@@ -22,6 +22,7 @@ namespace DustAdvisor.Algorithm
 
                 bool refund = inputs.RefundWindow.Contains(meta.CardId);
                 if (inputs.Options.Strategy == Strategy.RefundOnly && !refund) continue;
+                if (inputs.Options.Strategy == Strategy.RotationImminent && !inputs.RotatingCardIds.Contains(meta.CardId)) continue;
 
                 int inDeckCount = 0;
                 inputs.DeckUsage.TryGetValue(meta.CardId, out inDeckCount);

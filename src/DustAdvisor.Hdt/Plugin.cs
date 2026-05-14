@@ -70,11 +70,15 @@ namespace DustAdvisor.Hdt
                 foreach (var c in collection) if (!metaIds.Contains(c.CardId)) missingMetaCount++;
 
                 var deckUsage = BuildDeckUsage();
+                var rotatingCardIds = new System.Collections.Generic.HashSet<string>();
+                foreach (var m in data.Meta)
+                    if (DustAdvisor.Data.StandardSets.RotatingNextYear.Contains(m.Set.Code))
+                        rotatingCardIds.Add(m.CardId);
 
                 Func<DustAdvisor.Algorithm.Domain.AdvisorOptions, DustAdvisor.Algorithm.Domain.DustPlan> recompute = opts =>
                 {
                     var ins = new DustAdvisor.Algorithm.AdvisorInputs(
-                        collection, data.Meta, data.Uncraftable, data.RefundWindow, opts, deckUsage);
+                        collection, data.Meta, data.Uncraftable, data.RefundWindow, opts, deckUsage, rotatingCardIds);
                     var plan = new DustAdvisor.Algorithm.Advisor().Recommend(ins);
                     if (missingMetaCount > 0)
                     {

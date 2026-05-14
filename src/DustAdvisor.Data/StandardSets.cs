@@ -26,5 +26,12 @@ namespace DustAdvisor.Data
             "THE_LOST_CITY", // The Lost City expansion + mini-set (Year of the Scarab, ~Aug 2025)
             "TIME_TRAVEL",   // Time Travelers expansion + mini-set (Year of the Scarab, ~Nov 2025)
         };
+
+        /// Sets currently in Standard but rotating out at the next year-flip.
+        /// Empty for most of the year; the user fills this when the rotation is imminent
+        /// (typically Jan-Mar each year). RotationImminent strategy uses this list.
+        public static readonly HashSet<string> RotatingNextYear = new HashSet<string>
+        {
+        };
     }
 }
