@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DustAdvisor.Algorithm", "Du
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DustAdvisor.Algorithm.Tests", "DustAdvisor.Algorithm.Tests\DustAdvisor.Algorithm.Tests.csproj", "{8E6FE004-66C5-4D67-BFBD-735844AC3877}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DustAdvisor.Data", "DustAdvisor.Data\DustAdvisor.Data.csproj", "{C268F95F-D2CD-4FC3-94DE-F74AC129051E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DustAdvisor.Data.Tests", "DustAdvisor.Data.Tests\DustAdvisor.Data.Tests.csproj", "{4C7F3F11-D5F0-4897-8998-2ECAC482723D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,13 @@ Global
 		{8E6FE004-66C5-4D67-BFBD-735844AC3877}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E6FE004-66C5-4D67-BFBD-735844AC3877}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E6FE004-66C5-4D67-BFBD-735844AC3877}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C268F95F-D2CD-4FC3-94DE-F74AC129051E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C268F95F-D2CD-4FC3-94DE-F74AC129051E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C268F95F-D2CD-4FC3-94DE-F74AC129051E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C268F95F-D2CD-4FC3-94DE-F74AC129051E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C7F3F11-D5F0-4897-8998-2ECAC482723D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C7F3F11-D5F0-4897-8998-2ECAC482723D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C7F3F11-D5F0-4897-8998-2ECAC482723D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C7F3F11-D5F0-4897-8998-2ECAC482723D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
