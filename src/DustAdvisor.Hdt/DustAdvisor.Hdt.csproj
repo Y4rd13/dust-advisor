@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>DustAdvisor</AssemblyName>
+    <RootNamespace>DustAdvisor.Hdt</RootNamespace>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Override at command line: dotnet build /p:HdtAppDir=C:\Users\dharm\AppData\Local\HearthstoneDeckTracker\app-1.52.7 -->
+    <HdtAppDir Condition="'$(HdtAppDir)'==''">$(LOCALAPPDATA)\HearthstoneDeckTracker\app-1.52.6</HdtAppDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="HearthstoneDeckTracker">
+      <HintPath>$(HdtAppDir)\HearthstoneDeckTracker.exe</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DustAdvisor.Algorithm\DustAdvisor.Algorithm.csproj" />
+    <ProjectReference Include="..\DustAdvisor.Data\DustAdvisor.Data.csproj" />
+  </ItemGroup>
+</Project>
