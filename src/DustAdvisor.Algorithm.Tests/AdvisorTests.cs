@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using DustAdvisor.Algorithm;
 using DustAdvisor.Algorithm.Domain;
 using DustAdvisor.Algorithm.Tests.Fixtures;
@@ -262,6 +263,30 @@ namespace DustAdvisor.Algorithm.Tests
 
             var plan = new Advisor().Recommend(inputs);
             plan.Items.Should().ContainSingle().Which.CardId.Should().Be("R_001");
+        }
+
+        [Fact]
+        public void Plan_is_sorted_refund_first_then_wild_then_by_rarity_desc()
+        {
+            // 3 cards: a refund-window common, a Wild legendary, and a Standard-legal rare.
+            // Default options dust all (use MaxDust to bypass Standard skip).
+            var refundCommon = CardFixtures.CommonWild("A", 1);
+            var wildLeg = CardFixtures.LegendaryWild("B", 2);
+            var stdRare = CardFixtures.RareStandard("C", 3);
+            var inputs = new AdvisorInputs(
+                collection: new[]
+                {
+                    new CollectionEntry("A", regular: 5),
+                    new CollectionEntry("B", regular: 2),
+                    new CollectionEntry("C", regular: 5),
+                },
+                meta: new[] { refundCommon, wildLeg, stdRare },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string> { "A" },
+                options: new AdvisorOptions(strategy: Strategy.MaxDust));
+
+            var plan = new Advisor().Recommend(inputs);
+            plan.Items.Select(i => i.CardId).Should().ContainInOrder("A", "B", "C");
         }
     }
 }
