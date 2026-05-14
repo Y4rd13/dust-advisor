@@ -20,7 +20,7 @@ namespace DustAdvisor.Hdt
         }
 
         public void OnUnload() { }
-        public void OnButtonPress() { }
+        public async void OnButtonPress() => await RunAsync();
         public void OnUpdate() { }
 
         private async System.Threading.Tasks.Task RunAsync()

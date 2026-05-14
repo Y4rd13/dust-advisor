@@ -15,7 +15,8 @@ namespace DustAdvisor.Ui
             InitializeComponent();
             _plan = plan;
             _recompute = recompute;
-            StrategyBox.ItemsSource = Enum.GetValues(typeof(Strategy));
+            // RotationImminent is in the enum for future use but currently behaves like SafeOnly. Hide it.
+            StrategyBox.ItemsSource = new[] { Strategy.SafeOnly, Strategy.MaxDust, Strategy.RefundOnly };
             StrategyBox.SelectedItem = Strategy.SafeOnly;
             Render(plan);
             StrategyBox.SelectionChanged += (s, e) => Recompute();
