@@ -4,6 +4,8 @@
 **Date:** 2026-05-13
 **Author:** benjaserrau@gmail.com
 
+**Scope:** Personal tool, local-only. Not for public distribution.
+
 ## 1. Problem
 
 Hearthstone players accumulate excess cards over time: duplicates beyond the 2-per-deck (or 1-per-deck for legendaries) playset, golden versions of cards they already own in normal, cards that have rotated to Wild and they no longer play, and a long tail of cosmetic variants (Signature, Diamond) with non-trivial disenchant rules. Manually deciding what to dust in the in-game collection manager is tedious and error-prone — Blizzard's UI does not expose "you own 5 of this; 3 are safe to dust for X Arcane Dust."
@@ -219,11 +221,15 @@ A WPF panel (size ~520×700 px, dockable) with:
 - Localized UI (v1 English; data layer already supports 15 locales for card names).
 - A standalone (non-HDT) front end. Algorithm/Data modules are decoupled so this is feasible later without rewrite.
 
-## 11. Open Decisions
+## 11. Scope: Personal Use Only
 
-1. **Distribution channel**: bundled GitHub Releases zip only, or also submitted to the HDT Plugins wiki? *Default: GitHub Releases first, wiki submission once stable.*
-2. **License**: MIT vs. Apache-2.0? *Default: MIT, matching most HDT plugins.*
-3. **Telemetry**: none (privacy-first) vs. opt-in anonymous "how much dust does my plugin save" stat? *Default: none in v1.*
+This plugin is being built for personal use. Out of scope for this version:
+- No public distribution (no GitHub Releases, no HDT plugin wiki submission, no installer).
+- No license selection (personal use, single user).
+- No telemetry, no crash reporting, no analytics — nothing leaves the local machine.
+- No multi-user account handling.
+
+Install path is local file copy into `HDT/Plugins/DustAdvisor/`. Updates are git pulls + rebuild.
 
 ## 12. Verification & Acceptance
 
