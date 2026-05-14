@@ -39,10 +39,22 @@ namespace DustAdvisor.Algorithm
                 int effectiveRegular = regularLocked ? 0 : entry.Regular;
                 int effectiveGolden = goldenLocked ? 0 : entry.Golden;
 
-                int keepGolden = System.Math.Min(effectiveGolden, playsetRemaining);
-                int keepRegular = System.Math.Max(0, playsetRemaining - keepGolden);
-                int dustRegular = System.Math.Max(0, effectiveRegular - keepRegular);
-                int dustGolden = System.Math.Max(0, effectiveGolden - keepGolden);
+                int keepGolden, keepRegular, dustRegular, dustGolden;
+                if (inputs.Options.Strategy == Strategy.MaxDust)
+                {
+                    // MaxDust: dust the higher-value copies first. Keep regulars as the playable
+                    // copies, dust the goldens. Maximizes total dust at the cost of the cosmetic upgrade.
+                    keepRegular = System.Math.Min(effectiveRegular, playsetRemaining);
+                    keepGolden = System.Math.Max(0, playsetRemaining - keepRegular);
+                }
+                else
+                {
+                    // Default: preserve goldens as the playable copies (cosmetic upgrade), dust regulars first.
+                    keepGolden = System.Math.Min(effectiveGolden, playsetRemaining);
+                    keepRegular = System.Math.Max(0, playsetRemaining - keepGolden);
+                }
+                dustRegular = System.Math.Max(0, effectiveRegular - keepRegular);
+                dustGolden = System.Math.Max(0, effectiveGolden - keepGolden);
 
                 int unitRegular = refund ? Constants.CraftCost(meta.Rarity) : Constants.DisenchantRegular(meta.Rarity);
                 int unitGolden = refund ? Constants.GoldenCraftCost(meta.Rarity) : Constants.DisenchantGolden(meta.Rarity);

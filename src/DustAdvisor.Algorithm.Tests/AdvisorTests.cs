@@ -322,5 +322,43 @@ namespace DustAdvisor.Algorithm.Tests
             plan.Items[0].CardId.Should().Be("RF_001");
             plan.Items[0].InRefundWindow.Should().BeTrue();
         }
+
+        [Fact]
+        public void MaxDust_dusts_goldens_first_when_both_present()
+        {
+            // 2 regular + 2 golden of a Wild common, playset=2.
+            // SafeOnly default: keep goldens, dust 2 regulars → 2*5 = 10 dust.
+            // MaxDust: keep regulars, dust 2 goldens → 2*50 = 100 dust.
+            var meta = CardFixtures.CommonWild("EX1_MAX_G", 700);
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("EX1_MAX_G", regular: 2, golden: 2) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions(strategy: Strategy.MaxDust));
+
+            var item = new Advisor().Recommend(inputs).Items.Should().ContainSingle().Subject;
+            item.RegularToDust.Should().Be(0);
+            item.GoldenToDust.Should().Be(2);
+            item.DustGained.Should().Be(100);
+        }
+
+        [Fact]
+        public void SafeOnly_still_dusts_regulars_first_when_both_present()
+        {
+            // Regression: SafeOnly behavior unchanged. 2 reg + 2 gold common, playset=2 → dust 2 reg.
+            var meta = CardFixtures.CommonWild("EX1_SAFE_G", 701);
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("EX1_SAFE_G", regular: 2, golden: 2) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions(strategy: Strategy.SafeOnly));
+
+            var item = new Advisor().Recommend(inputs).Items.Should().ContainSingle().Subject;
+            item.RegularToDust.Should().Be(2);
+            item.GoldenToDust.Should().Be(0);
+            item.DustGained.Should().Be(10);
+        }
     }
 }
