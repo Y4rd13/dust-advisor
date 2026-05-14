@@ -6,5 +6,6 @@ namespace DustAdvisor.Algorithm.Domain
         MaxDust,
         RotationImminent,
         RefundOnly,
+        SafeOnlyUnused,
     }
 }

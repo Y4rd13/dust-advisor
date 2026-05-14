@@ -360,5 +360,57 @@ namespace DustAdvisor.Algorithm.Tests
             item.GoldenToDust.Should().Be(0);
             item.DustGained.Should().Be(10);
         }
+
+        [Fact]
+        public void DustItem_carries_InDeckCount_when_card_is_in_decks()
+        {
+            var meta = CardFixtures.CommonWild("EX1_DECK", 800);
+            var deckUsage = new System.Collections.Generic.Dictionary<string, int> { { "EX1_DECK", 3 } };
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("EX1_DECK", regular: 5) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions(strategy: Strategy.SafeOnly),
+                deckUsage: deckUsage);
+
+            var item = new Advisor().Recommend(inputs).Items.Should().ContainSingle().Subject;
+            item.InDeckCount.Should().Be(3);
+            item.RegularToDust.Should().Be(3);
+        }
+
+        [Fact]
+        public void SafeOnlyUnused_skips_cards_present_in_any_deck()
+        {
+            var meta = CardFixtures.CommonWild("EX1_INUSE", 801);
+            var deckUsage = new System.Collections.Generic.Dictionary<string, int> { { "EX1_INUSE", 1 } };
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("EX1_INUSE", regular: 5) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions(strategy: Strategy.SafeOnlyUnused),
+                deckUsage: deckUsage);
+
+            new Advisor().Recommend(inputs).Items.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void SafeOnlyUnused_still_dusts_cards_not_in_any_deck()
+        {
+            var meta = CardFixtures.CommonWild("EX1_FREE", 802);
+            var deckUsage = new System.Collections.Generic.Dictionary<string, int>(); // empty
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("EX1_FREE", regular: 5) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions(strategy: Strategy.SafeOnlyUnused),
+                deckUsage: deckUsage);
+
+            var item = new Advisor().Recommend(inputs).Items.Should().ContainSingle().Subject;
+            item.RegularToDust.Should().Be(3);
+            item.InDeckCount.Should().Be(0);
+        }
     }
 }
