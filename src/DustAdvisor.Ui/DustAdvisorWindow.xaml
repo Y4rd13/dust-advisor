@@ -22,6 +22,7 @@
         <TextBlock Text="Target dust:" VerticalAlignment="Center" Margin="16,0,4,0"/>
         <TextBox x:Name="TargetDustBox" Width="80" VerticalAlignment="Center"/>
         <TextBlock x:Name="TargetStatusLabel" VerticalAlignment="Center" Margin="8,0,0,0" Foreground="Gray"/>
+        <TextBlock x:Name="WastedDustLabel" VerticalAlignment="Center" Margin="16,0,0,0" Foreground="DarkOrange" FontStyle="Italic"/>
       </StackPanel>
 
       <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="8,0,8,8">
