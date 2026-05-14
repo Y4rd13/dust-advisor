@@ -30,6 +30,9 @@ namespace DustAdvisor.Algorithm
                 string metaTier;
                 if (!inputs.MetaTiers.TryGetValue(meta.CardId, out metaTier)) metaTier = "?";
 
+                double? winRate = null;
+                if (inputs.WinRates.TryGetValue(meta.CardId, out double wr)) winRate = wr;
+
                 if (inputs.Options.Strategy == Strategy.SafeOnlyUnused && inDeckCount > 0) continue;
 
                 if (meta.Set.IsStandardLegal)
@@ -82,7 +85,8 @@ namespace DustAdvisor.Algorithm
                         isStandardLegal: meta.Set.IsStandardLegal,
                         inDeckCount: inDeckCount,
                         @class: meta.Class,
-                        metaTier: metaTier));
+                        metaTier: metaTier,
+                        winRate: winRate));
                     totalDust += dustGained;
                 }
             }
