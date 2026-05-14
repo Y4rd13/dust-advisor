@@ -19,9 +19,7 @@ namespace DustAdvisor.Data
 
         public async Task<IReadOnlyList<CardMeta>> LoadCollectibleAsync(string locale, CancellationToken ct)
         {
-            var url = $"{BaseUrl}/{locale}/cards.collectible.json";
-            var json = await _fetcher.GetAsync(url, ct).ConfigureAwait(false);
-            var dtos = JsonConvert.DeserializeObject<List<HearthstoneJsonCardDto>>(json) ?? new List<HearthstoneJsonCardDto>();
+            var dtos = await FetchDtosAsync(locale, ct).ConfigureAwait(false);
             var result = new List<CardMeta>(dtos.Count);
             foreach (var d in dtos)
             {
@@ -32,6 +30,27 @@ namespace DustAdvisor.Data
                 result.Add(new CardMeta(d.Id, d.DbfId, d.Name ?? d.Id, rarity.Value, set, isCollectible: true));
             }
             return result;
+        }
+
+        public async Task<IReadOnlyCollection<(string CardId, Premium Premium)>> LoadHeuristicUncraftableAsync(string locale, CancellationToken ct)
+        {
+            var dtos = await FetchDtosAsync(locale, ct).ConfigureAwait(false);
+            var set = new HashSet<(string, Premium)>();
+            foreach (var d in dtos)
+            {
+                if (!d.Collectible) continue;
+                if (string.IsNullOrEmpty(d.Id)) continue;
+                foreach (var p in UncraftableHeuristic.DetectUncraftablePremiums(d.HowToEarn, d.HowToEarnGolden))
+                    set.Add((d.Id, p));
+            }
+            return set;
+        }
+
+        private async Task<List<HearthstoneJsonCardDto>> FetchDtosAsync(string locale, CancellationToken ct)
+        {
+            var url = $"{BaseUrl}/{locale}/cards.collectible.json";
+            var json = await _fetcher.GetAsync(url, ct).ConfigureAwait(false);
+            return JsonConvert.DeserializeObject<List<HearthstoneJsonCardDto>>(json) ?? new List<HearthstoneJsonCardDto>();
         }
 
         private static Rarity? ParseRarity(string s)

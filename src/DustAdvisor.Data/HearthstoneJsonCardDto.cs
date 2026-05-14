@@ -10,5 +10,7 @@ namespace DustAdvisor.Data
         [JsonProperty("rarity")] public string Rarity { get; set; }
         [JsonProperty("set")] public string Set { get; set; }
         [JsonProperty("collectible")] public bool Collectible { get; set; }
+        [JsonProperty("howToEarn")] public string HowToEarn { get; set; }
+        [JsonProperty("howToEarnGolden")] public string HowToEarnGolden { get; set; }
     }
 }
