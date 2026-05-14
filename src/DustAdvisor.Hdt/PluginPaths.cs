@@ -18,5 +18,7 @@ namespace DustAdvisor.Hdt
         public static string CacheDir => Path.Combine(PluginRoot, "cache");
         public static string UncraftableFile => Path.Combine(PluginRoot, "data", "uncraftable.json");
         public static string RefundFile => Path.Combine(PluginRoot, "data", "refund.json");
+        public static string NeverSuggestFile => Path.Combine(PluginRoot, "data", "never_suggest.json");
+        public static string CardArtDir => Path.Combine(PluginRoot, "cache", "art");
     }
 }
