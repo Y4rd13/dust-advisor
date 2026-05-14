@@ -27,10 +27,19 @@ namespace DustAdvisor.Algorithm
                 int cosmeticHeld = entry.Diamond + entry.Signature;
                 int playsetRemaining = System.Math.Max(0, playset - cosmeticHeld);
 
-                int keepGolden = System.Math.Min(entry.Golden, playsetRemaining);
+                bool regularLocked = inputs.Uncraftable.Contains((meta.CardId, Premium.Regular));
+                bool goldenLocked = inputs.Uncraftable.Contains((meta.CardId, Premium.Golden));
+
+                int effectiveRegular = regularLocked ? 0 : entry.Regular;
+                int effectiveGolden = goldenLocked ? 0 : entry.Golden;
+                // Locked copies do not count toward playset (you can't dust them, but the user may
+                // not want to rely on them either — conservative: treat as cosmetic, not playset).
+                // Diamond + Signature still count via cosmeticHeld above.
+
+                int keepGolden = System.Math.Min(effectiveGolden, playsetRemaining);
                 int keepRegular = System.Math.Max(0, playsetRemaining - keepGolden);
-                int dustRegular = System.Math.Max(0, entry.Regular - keepRegular);
-                int dustGolden = System.Math.Max(0, entry.Golden - keepGolden);
+                int dustRegular = System.Math.Max(0, effectiveRegular - keepRegular);
+                int dustGolden = System.Math.Max(0, effectiveGolden - keepGolden);
 
                 int dustGained = dustRegular * Constants.DisenchantRegular(meta.Rarity)
                                + dustGolden * Constants.DisenchantGolden(meta.Rarity);

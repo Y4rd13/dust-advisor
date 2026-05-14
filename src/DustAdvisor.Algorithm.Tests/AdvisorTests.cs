@@ -134,5 +134,40 @@ namespace DustAdvisor.Algorithm.Tests
             item.RegularToDust.Should().Be(1);
             item.DustGained.Should().Be(400);
         }
+
+        [Fact]
+        public void Locked_golden_copy_is_not_dusted_but_regulars_still_can_be()
+        {
+            // 1 golden (locked, from Rewards Track) + 3 regulars of a common.
+            // Locked golden holds nothing for dust accounting; playset is 2 regulars; 1 regular dustable.
+            // The golden is NOT counted toward playset because it is locked (treated as cosmetic-only).
+            var meta = CardFixtures.CommonWild("EX1_010", 10);
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("EX1_010", regular: 3, golden: 1) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)> { ("EX1_010", Premium.Golden) },
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions());
+
+            var item = new Advisor().Recommend(inputs).Items.Should().ContainSingle().Subject;
+            item.RegularToDust.Should().Be(1);
+            item.GoldenToDust.Should().Be(0);
+            item.DustGained.Should().Be(5);
+        }
+
+        [Fact]
+        public void Locked_regular_copy_is_not_dusted()
+        {
+            // 1 regular locked (e.g., Group Learning gift legendary) — never dust it.
+            var meta = CardFixtures.LegendaryWild("LEG_LOCK", 300);
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("LEG_LOCK", regular: 1) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)> { ("LEG_LOCK", Premium.Regular) },
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions());
+
+            new Advisor().Recommend(inputs).Items.Should().BeEmpty();
+        }
     }
 }
