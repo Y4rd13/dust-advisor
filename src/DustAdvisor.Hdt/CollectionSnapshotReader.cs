@@ -1,11 +1,13 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using DustAdvisor.Algorithm.Domain;
 
 namespace DustAdvisor.Hdt
 {
     internal static class CollectionSnapshotReader
     {
-        // TAG_PREMIUM values from Hearthstone game engine (PremiumType enum)
+        // TAG_PREMIUM values from Hearthstone game engine
         private const int PremiumNormal    = 0;
         private const int PremiumGolden    = 1;
         private const int PremiumDiamond   = 2;
@@ -14,32 +16,45 @@ namespace DustAdvisor.Hdt
         public static IReadOnlyList<CollectionEntry> Read()
         {
             var mirror = new HearthMirror.Reflection();
-            dynamic raw = mirror.GetFullCollection();
+            object raw = mirror.GetFullCollection();
             if (raw == null)
                 return new List<CollectionEntry>();
 
-            // Group by CardId and sum counts by premium type.
-            // Using dynamic because HearthMirror.Objects.Card properties are not
-            // accessible as typed C# properties in this build of HearthMirror.dll.
-            var map = new Dictionary<string, int[]>(); // [normal, golden, diamond, signature]
+            var enumerable = raw as IEnumerable;
+            if (enumerable == null)
+                return new List<CollectionEntry>();
 
-            foreach (dynamic card in raw)
+            PropertyInfo cardIdProp = null;
+            PropertyInfo premiumProp = null;
+            PropertyInfo countProp = null;
+
+            var map = new Dictionary<string, int[]>();
+
+            foreach (object card in enumerable)
             {
-                if (card == null)
-                    continue;
+                if (card == null) continue;
 
-                string cardId = (string)card.CardId;
-                if (string.IsNullOrEmpty(cardId))
-                    continue;
+                if (cardIdProp == null)
+                {
+                    var t = card.GetType();
+                    cardIdProp = t.GetProperty("CardId");
+                    premiumProp = t.GetProperty("Premium") ?? t.GetProperty("PremiumType");
+                    countProp = t.GetProperty("Count");
+                    if (cardIdProp == null || premiumProp == null || countProp == null)
+                        return new List<CollectionEntry>();
+                }
+
+                var cardId = cardIdProp.GetValue(card) as string;
+                if (string.IsNullOrEmpty(cardId)) continue;
+
+                int premium = System.Convert.ToInt32(premiumProp.GetValue(card));
+                int count = System.Convert.ToInt32(countProp.GetValue(card));
 
                 if (!map.TryGetValue(cardId, out int[] counts))
                 {
                     counts = new int[4];
                     map[cardId] = counts;
                 }
-
-                int premium = (int)card.Premium;
-                int count   = (int)card.Count;
 
                 switch (premium)
                 {
