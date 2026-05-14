@@ -23,6 +23,10 @@ namespace DustAdvisor.Algorithm
                 bool refund = inputs.RefundWindow.Contains(meta.CardId);
                 if (inputs.Options.Strategy == Strategy.RefundOnly && !refund) continue;
 
+                int inDeckCount = 0;
+                inputs.DeckUsage.TryGetValue(meta.CardId, out inDeckCount);
+                if (inputs.Options.Strategy == Strategy.SafeOnlyUnused && inDeckCount > 0) continue;
+
                 if (meta.Set.IsStandardLegal)
                 {
                     warnings.Add(new Warning(meta.CardId,
@@ -70,7 +74,8 @@ namespace DustAdvisor.Algorithm
                         goldenToDust: dustGolden,
                         dustGained: dustGained,
                         inRefundWindow: refund,
-                        isStandardLegal: meta.Set.IsStandardLegal));
+                        isStandardLegal: meta.Set.IsStandardLegal,
+                        inDeckCount: inDeckCount));
                     totalDust += dustGained;
                 }
             }
