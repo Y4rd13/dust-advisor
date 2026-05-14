@@ -28,5 +28,23 @@ namespace DustAdvisor.Algorithm.Tests
             plan.Items[0].DustGained.Should().Be(15);
             plan.TotalDust.Should().Be(15);
         }
+
+        [Fact]
+        public void Legendaries_use_playset_of_one()
+        {
+            var meta = CardFixtures.LegendaryWild("LEG_001", 100);
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("LEG_001", regular: 3) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions());
+
+            var plan = new Advisor().Recommend(inputs);
+
+            plan.Items.Should().ContainSingle()
+                .Which.RegularToDust.Should().Be(2);
+            plan.TotalDust.Should().Be(800);
+        }
     }
 }
