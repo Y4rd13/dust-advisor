@@ -8,5 +8,7 @@ namespace DustAdvisor.Data
     public interface IHearthstoneJsonClient
     {
         Task<IReadOnlyList<CardMeta>> LoadCollectibleAsync(string locale, CancellationToken ct);
+
+        Task<IReadOnlyCollection<(string CardId, Premium Premium)>> LoadHeuristicUncraftableAsync(string locale, CancellationToken ct);
     }
 }

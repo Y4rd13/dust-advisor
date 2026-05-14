@@ -28,6 +28,13 @@ namespace DustAdvisor.Hdt
                 var counts = kv.Value;
                 if (counts == null || counts.Length < 4) continue;
 
+                // Skip entries where the player owns zero copies of every premium tier.
+                // Index 4..7 are TrialCount (loaned, seasonal) — deliberately excluded from
+                // ownership counts. If all owned counts are zero, the player has only
+                // trials of this card and we treat it as not owned at all.
+                if (counts[0] == 0 && counts[1] == 0 && counts[2] == 0 && counts[3] == 0)
+                    continue;
+
                 result.Add(new CollectionEntry(
                     cardId: cardId,
                     regular: counts[0],
