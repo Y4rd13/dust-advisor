@@ -12,5 +12,6 @@ namespace DustAdvisor.Data
         [JsonProperty("collectible")] public bool Collectible { get; set; }
         [JsonProperty("howToEarn")] public string HowToEarn { get; set; }
         [JsonProperty("howToEarnGolden")] public string HowToEarnGolden { get; set; }
+        [JsonProperty("cardClass")] public string CardClass { get; set; }
     }
 }

@@ -76,7 +76,8 @@ namespace DustAdvisor.Algorithm
                         dustGained: dustGained,
                         inRefundWindow: refund,
                         isStandardLegal: meta.Set.IsStandardLegal,
-                        inDeckCount: inDeckCount));
+                        inDeckCount: inDeckCount,
+                        @class: meta.Class));
                     totalDust += dustGained;
                 }
             }
