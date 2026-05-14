@@ -169,5 +169,44 @@ namespace DustAdvisor.Algorithm.Tests
 
             new Advisor().Recommend(inputs).Items.Should().BeEmpty();
         }
+
+        [Fact]
+        public void Refund_window_pays_full_craft_cost_per_copy()
+        {
+            // 3 regular legendaries; 1 kept (playset = 1), 2 dustable.
+            // Normal DE = 400 each. Refund window DE = 1600 each.
+            // Total expected = 2 * 1600 = 3200.
+            var meta = CardFixtures.LegendaryWild("LEG_REFUND", 400);
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("LEG_REFUND", regular: 3) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string> { "LEG_REFUND" },
+                options: new AdvisorOptions());
+
+            var item = new Advisor().Recommend(inputs).Items.Should().ContainSingle().Subject;
+            item.RegularToDust.Should().Be(2);
+            item.DustGained.Should().Be(3200);
+            item.InRefundWindow.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Refund_window_pays_full_golden_craft_cost_per_golden_copy()
+        {
+            // 3 golden commons; playset = 2, 1 dustable.
+            // Normal golden DE = 50. Refund golden DE = 400 (full golden craft).
+            var meta = CardFixtures.CommonWild("EX1_REF_G", 401);
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("EX1_REF_G", golden: 3) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string> { "EX1_REF_G" },
+                options: new AdvisorOptions());
+
+            var item = new Advisor().Recommend(inputs).Items.Should().ContainSingle().Subject;
+            item.GoldenToDust.Should().Be(1);
+            item.DustGained.Should().Be(400);
+            item.InRefundWindow.Should().BeTrue();
+        }
     }
 }
