@@ -8,8 +8,9 @@ namespace DustAdvisor.Algorithm.Domain
         public Rarity Rarity { get; }
         public CardSet Set { get; }
         public bool IsCollectible { get; }
+        public string Class { get; }
 
-        public CardMeta(string cardId, int dbfId, string name, Rarity rarity, CardSet set, bool isCollectible)
+        public CardMeta(string cardId, int dbfId, string name, Rarity rarity, CardSet set, bool isCollectible, string @class = "NEUTRAL")
         {
             CardId = cardId;
             DbfId = dbfId;
@@ -17,6 +18,7 @@ namespace DustAdvisor.Algorithm.Domain
             Rarity = rarity;
             Set = set;
             IsCollectible = isCollectible;
+            Class = @class ?? "NEUTRAL";
         }
     }
 }

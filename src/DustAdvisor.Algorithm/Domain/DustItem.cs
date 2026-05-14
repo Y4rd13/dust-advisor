@@ -11,10 +11,11 @@ namespace DustAdvisor.Algorithm.Domain
         public bool InRefundWindow { get; }
         public bool IsStandardLegal { get; }
         public int InDeckCount { get; }
+        public string Class { get; }
 
         public DustItem(string cardId, string cardName, Rarity rarity,
                         int regularToDust, int goldenToDust, int dustGained,
-                        bool inRefundWindow, bool isStandardLegal, int inDeckCount = 0)
+                        bool inRefundWindow, bool isStandardLegal, int inDeckCount = 0, string @class = "NEUTRAL")
         {
             CardId = cardId;
             CardName = cardName;
@@ -25,6 +26,7 @@ namespace DustAdvisor.Algorithm.Domain
             InRefundWindow = inRefundWindow;
             IsStandardLegal = isStandardLegal;
             InDeckCount = inDeckCount;
+            Class = @class ?? "NEUTRAL";
         }
     }
 }

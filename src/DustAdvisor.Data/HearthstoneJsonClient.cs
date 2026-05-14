@@ -27,7 +27,7 @@ namespace DustAdvisor.Data
                 var rarity = ParseRarity(d.Rarity);
                 if (rarity == null) continue;
                 var set = new CardSet(d.Set ?? "UNKNOWN", StandardSets.Codes.Contains(d.Set ?? string.Empty));
-                result.Add(new CardMeta(d.Id, d.DbfId, d.Name ?? d.Id, rarity.Value, set, isCollectible: true));
+                result.Add(new CardMeta(d.Id, d.DbfId, d.Name ?? d.Id, rarity.Value, set, isCollectible: true, @class: d.CardClass));
             }
             return result;
         }
