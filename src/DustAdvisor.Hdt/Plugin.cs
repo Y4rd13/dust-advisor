@@ -27,6 +27,7 @@ namespace DustAdvisor.Hdt
         {
             try
             {
+                string locale = ReadHdtLocaleOrDefault();
                 var http = new DustAdvisor.Data.CachingHttpFetcher(
                     new DustAdvisor.Data.HttpClientFetcher(new System.Net.Http.HttpClient()),
                     PluginPaths.CacheDir);
@@ -38,7 +39,7 @@ namespace DustAdvisor.Hdt
                     new DustAdvisor.Data.NeverSuggestRepository());
 
                 var data = await loader.LoadAsync(
-                    locale: "enUS",
+                    locale: locale,
                     uncraftablePath: PluginPaths.UncraftableFile,
                     refundPath: PluginPaths.RefundFile,
                     neverSuggestPath: PluginPaths.NeverSuggestFile,
@@ -76,7 +77,8 @@ namespace DustAdvisor.Hdt
                 var initialPlan = recompute(new DustAdvisor.Algorithm.Domain.AdvisorOptions());
                 var artCache = new DustAdvisor.Ui.Export.CardArtCache(
                     new DustAdvisor.Ui.HttpBinaryFetcher(),
-                    PluginPaths.CardArtDir);
+                    PluginPaths.CardArtDir,
+                    locale: locale);
                 var win = new DustAdvisor.Ui.DustAdvisorWindow(initialPlan, recompute, artCache, PluginPaths.NeverSuggestFile);
                 win.Title = $"Dust Advisor — {collection.Count} cards read, {matched} matched metadata";
                 win.Show();
@@ -84,6 +86,27 @@ namespace DustAdvisor.Hdt
             catch (System.Exception ex)
             {
                 System.Windows.MessageBox.Show(ex.ToString(), "Dust Advisor: error");
+            }
+        }
+
+        private static string ReadHdtLocaleOrDefault()
+        {
+            try
+            {
+                var lang = Hearthstone_Deck_Tracker.Helper.GetCardLanguage();
+                if (string.IsNullOrEmpty(lang)) return "enUS";
+                // HearthstoneJSON locale codes: enUS, deDE, esES, esMX, frFR, itIT, jaJP, koKR,
+                // plPL, ptBR, ruRU, thTH, zhCN, zhTW.
+                var allowed = new System.Collections.Generic.HashSet<string>
+                {
+                    "enUS","deDE","esES","esMX","frFR","itIT","jaJP","koKR",
+                    "plPL","ptBR","ruRU","thTH","zhCN","zhTW"
+                };
+                return allowed.Contains(lang) ? lang : "enUS";
+            }
+            catch
+            {
+                return "enUS";
             }
         }
     }
