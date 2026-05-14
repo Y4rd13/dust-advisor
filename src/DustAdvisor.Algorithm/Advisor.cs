@@ -63,7 +63,14 @@ namespace DustAdvisor.Algorithm
                 }
             }
 
-            return new DustPlan(items, warnings, totalDust);
+            var ordered = items
+                .OrderByDescending(i => i.InRefundWindow)
+                .ThenBy(i => i.IsStandardLegal)
+                .ThenByDescending(i => i.Rarity)
+                .ThenBy(i => i.CardName)
+                .ToList();
+
+            return new DustPlan(ordered, warnings, totalDust);
         }
     }
 }
