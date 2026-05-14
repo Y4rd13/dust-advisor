@@ -16,11 +16,48 @@ namespace DustAdvisor.Hdt
         public void OnLoad()
         {
             MenuItem = new MenuItem { Header = "Dust Advisor" };
-            MenuItem.Click += (s, e) => { /* wired in a later task */ };
+            MenuItem.Click += async (s, e) => await RunAsync();
         }
 
         public void OnUnload() { }
-        public void OnButtonPress() { /* wired in a later task */ }
+        public void OnButtonPress() { }
         public void OnUpdate() { }
+
+        private async System.Threading.Tasks.Task RunAsync()
+        {
+            try
+            {
+                var collection = CollectionSnapshotReader.Read();
+
+                var http = new DustAdvisor.Data.CachingHttpFetcher(
+                    new DustAdvisor.Data.HttpClientFetcher(new System.Net.Http.HttpClient()),
+                    PluginPaths.CacheDir);
+                var hsj = new DustAdvisor.Data.HearthstoneJsonClient(http);
+                var loader = new DustAdvisor.Data.DataLoader(
+                    hsj,
+                    new DustAdvisor.Data.UncraftableRepository(),
+                    new DustAdvisor.Data.RefundRepository());
+
+                var data = await loader.LoadAsync(
+                    locale: "enUS",
+                    uncraftablePath: PluginPaths.UncraftableFile,
+                    refundPath: PluginPaths.RefundFile,
+                    now: System.DateTimeOffset.UtcNow,
+                    ct: System.Threading.CancellationToken.None);
+
+                var inputs = new DustAdvisor.Algorithm.AdvisorInputs(
+                    collection, data.Meta, data.Uncraftable, data.RefundWindow,
+                    new DustAdvisor.Algorithm.Domain.AdvisorOptions());
+
+                var plan = new DustAdvisor.Algorithm.Advisor().Recommend(inputs);
+
+                var report = $"Cards in plan: {plan.Items.Count}\nTotal dust: {plan.TotalDust}\nWarnings: {plan.Warnings.Count}";
+                System.Windows.MessageBox.Show(report, "Dust Advisor");
+            }
+            catch (System.Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.ToString(), "Dust Advisor: error");
+            }
+        }
     }
 }
