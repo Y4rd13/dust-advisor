@@ -87,5 +87,52 @@ namespace DustAdvisor.Algorithm.Tests
             item.GoldenToDust.Should().Be(1);
             item.DustGained.Should().Be(50);
         }
+
+        [Fact]
+        public void Core_set_cards_are_skipped()
+        {
+            var meta = CardFixtures.CoreCard("CORE_001", 9001);
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("CORE_001", regular: 5) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions());
+
+            new Advisor().Recommend(inputs).Items.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void Diamond_copies_are_not_dusted()
+        {
+            // 1 diamond + 0 others. Diamond is never dustable.
+            var meta = CardFixtures.LegendaryWild("LEG_DIAM", 200);
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("LEG_DIAM", diamond: 1) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions());
+
+            new Advisor().Recommend(inputs).Items.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void Diamond_counts_toward_playset_so_regulars_become_dustable()
+        {
+            // 1 diamond legendary + 1 regular = 2 owned; playset is 1.
+            // Diamond holds the playset slot; the 1 regular is safe to dust.
+            var meta = CardFixtures.LegendaryWild("LEG_DIAM2", 201);
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("LEG_DIAM2", regular: 1, diamond: 1) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions());
+
+            var item = new Advisor().Recommend(inputs).Items.Should().ContainSingle().Subject;
+            item.RegularToDust.Should().Be(1);
+            item.DustGained.Should().Be(400);
+        }
     }
 }
