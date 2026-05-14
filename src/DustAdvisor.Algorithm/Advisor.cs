@@ -20,31 +20,32 @@ namespace DustAdvisor.Algorithm
                 if (meta.Rarity == Rarity.Free) continue;
                 if (meta.Set.IsCore) continue;
 
-                int playset = Constants.PlaysetSize(meta.Rarity);
+                bool refund = inputs.RefundWindow.Contains(meta.CardId);
+                if (inputs.Options.Strategy == Strategy.RefundOnly && !refund) continue;
 
-                // Diamond and Signature count toward playset but cannot be dusted (Diamond never;
-                // Signature only via the uncraftable set in a later task).
+                if (meta.Set.IsStandardLegal)
+                {
+                    warnings.Add(new Warning(meta.CardId,
+                        "Standard-legal: card may still be valuable in current meta."));
+                    if (inputs.Options.Strategy == Strategy.SafeOnly && inputs.Options.KeepStandardLegal) continue;
+                }
+
+                int playset = Constants.PlaysetSize(meta.Rarity);
                 int cosmeticHeld = entry.Diamond + entry.Signature;
                 int playsetRemaining = System.Math.Max(0, playset - cosmeticHeld);
 
                 bool regularLocked = inputs.Uncraftable.Contains((meta.CardId, Premium.Regular));
                 bool goldenLocked = inputs.Uncraftable.Contains((meta.CardId, Premium.Golden));
-
                 int effectiveRegular = regularLocked ? 0 : entry.Regular;
                 int effectiveGolden = goldenLocked ? 0 : entry.Golden;
-                // Locked copies do not count toward playset (you can't dust them, but the user may
-                // not want to rely on them either — conservative: treat as cosmetic, not playset).
-                // Diamond + Signature still count via cosmeticHeld above.
 
                 int keepGolden = System.Math.Min(effectiveGolden, playsetRemaining);
                 int keepRegular = System.Math.Max(0, playsetRemaining - keepGolden);
                 int dustRegular = System.Math.Max(0, effectiveRegular - keepRegular);
                 int dustGolden = System.Math.Max(0, effectiveGolden - keepGolden);
 
-                bool refund = inputs.RefundWindow.Contains(meta.CardId);
                 int unitRegular = refund ? Constants.CraftCost(meta.Rarity) : Constants.DisenchantRegular(meta.Rarity);
                 int unitGolden = refund ? Constants.GoldenCraftCost(meta.Rarity) : Constants.DisenchantGolden(meta.Rarity);
-
                 int dustGained = dustRegular * unitRegular + dustGolden * unitGolden;
 
                 if (dustRegular > 0 || dustGolden > 0)
