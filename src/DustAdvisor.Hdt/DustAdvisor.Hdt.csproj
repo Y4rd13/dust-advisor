@@ -18,6 +18,14 @@
       <HintPath>$(HdtAppDir)\HearthstoneDeckTracker.exe</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="HearthMirror">
+      <HintPath>$(HdtAppDir)\HearthMirror.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
   <ItemGroup>
