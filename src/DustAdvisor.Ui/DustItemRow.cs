@@ -1,9 +1,15 @@
+using System.IO;
+using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 using DustAdvisor.Algorithm.Domain;
+using DustAdvisor.Ui.Export;
 
 namespace DustAdvisor.Ui
 {
-    public sealed class DustItemRow
+    public sealed class DustItemRow : System.ComponentModel.INotifyPropertyChanged
     {
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+
         public string CardId { get; }
         public string Name { get; }
         public string Rarity { get; }
@@ -11,6 +17,13 @@ namespace DustAdvisor.Ui
         public int GoldenToDust { get; }
         public int DustGained { get; }
         public string Flag { get; }
+
+        private BitmapImage _art;
+        public BitmapImage Art
+        {
+            get { return _art; }
+            private set { _art = value; PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(Art))); }
+        }
 
         public DustItemRow(DustItem item)
         {
@@ -23,6 +36,26 @@ namespace DustAdvisor.Ui
             Flag = item.InRefundWindow ? "REFUND"
                  : item.IsStandardLegal ? "STANDARD"
                  : "WILD";
+        }
+
+        public async Task EnsureArtLoadedAsync(CardArtCache cache, int size = 256)
+        {
+            if (Art != null) return;
+            var bytes = await cache.GetAsync(CardId, size, System.Threading.CancellationToken.None).ConfigureAwait(false);
+            if (bytes == null) return;
+
+            // Decode on a background thread; assign on UI thread.
+            BitmapImage bmp = null;
+            await Task.Run(() =>
+            {
+                bmp = new BitmapImage();
+                bmp.BeginInit();
+                bmp.CacheOption = BitmapCacheOption.OnLoad;
+                bmp.StreamSource = new MemoryStream(bytes);
+                bmp.EndInit();
+                bmp.Freeze();
+            });
+            await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => Art = bmp);
         }
     }
 }

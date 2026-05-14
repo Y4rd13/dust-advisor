@@ -74,7 +74,10 @@ namespace DustAdvisor.Hdt
                     return new DustAdvisor.Algorithm.Advisor().Recommend(ins);
                 };
                 var initialPlan = recompute(new DustAdvisor.Algorithm.Domain.AdvisorOptions());
-                var win = new DustAdvisor.Ui.DustAdvisorWindow(initialPlan, recompute);
+                var artCache = new DustAdvisor.Ui.Export.CardArtCache(
+                    new DustAdvisor.Ui.HttpBinaryFetcher(),
+                    PluginPaths.CardArtDir);
+                var win = new DustAdvisor.Ui.DustAdvisorWindow(initialPlan, recompute, artCache);
                 win.Title = $"Dust Advisor — {collection.Count} cards read, {matched} matched metadata";
                 win.Show();
             }

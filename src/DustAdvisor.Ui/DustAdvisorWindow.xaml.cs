@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using DustAdvisor.Algorithm.Domain;
+using DustAdvisor.Ui.Export;
 
 namespace DustAdvisor.Ui
 {
@@ -18,13 +19,15 @@ namespace DustAdvisor.Ui
     {
         private DustPlan _plan;
         private readonly Func<AdvisorOptions, DustPlan> _recompute;
+        private readonly CardArtCache _artCache;
         private bool _ready;
 
-        public DustAdvisorWindow(DustPlan plan, Func<AdvisorOptions, DustPlan> recompute)
+        public DustAdvisorWindow(DustPlan plan, Func<AdvisorOptions, DustPlan> recompute, CardArtCache artCache)
         {
             InitializeComponent();
             _plan = plan;
             _recompute = recompute;
+            _artCache = artCache;
             // RotationImminent is in the enum for future use but currently behaves like SafeOnly. Hide it.
             StrategyBox.ItemsSource = new[] { Strategy.SafeOnly, Strategy.MaxDust, Strategy.RefundOnly };
             StrategyBox.SelectedItem = Strategy.SafeOnly;
@@ -128,6 +131,14 @@ namespace DustAdvisor.Ui
             if (dlg.ShowDialog() == true)
             {
                 System.IO.File.WriteAllText(dlg.FileName, content, System.Text.Encoding.UTF8);
+            }
+        }
+
+        private async void DataGridRow_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (sender is System.Windows.Controls.DataGridRow row && row.DataContext is DustItemRow item)
+            {
+                await item.EnsureArtLoadedAsync(_artCache);
             }
         }
     }
