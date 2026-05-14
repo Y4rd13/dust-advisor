@@ -64,6 +64,8 @@ namespace DustAdvisor.Ui
             CompositionTarget.Rendering += (s, e) => UpdateConfirmBar();
             ConfirmButton.Click += (s, e) => ConfirmCart();
             ClearCartButton.Click += (s, e) => ClearCart();
+
+            this.PreviewKeyDown += DustAdvisorWindow_PreviewKeyDown;
         }
 
         public void Render(DustPlan plan)
@@ -297,6 +299,67 @@ namespace DustAdvisor.Ui
                 DustAdvisor.Algorithm.Domain.Premium.Regular,
                 DustAdvisor.Algorithm.Domain.Premium.Golden,
                 DustAdvisor.Algorithm.Domain.Premium.Signature);
+        }
+
+        private void DustAdvisorWindow_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            // Don't intercept keys when typing in any text input (target dust, search, etc.).
+            if (System.Windows.Input.Keyboard.FocusedElement is System.Windows.Controls.TextBox) return;
+
+            bool ctrl = (System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Control) != 0;
+            bool shift = (System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Shift) != 0;
+
+            if (ctrl && e.Key == System.Windows.Input.Key.Z && !shift)
+            {
+                var label = _undo.Undo();
+                if (label != null) _toasts.Show($"Undid: {label}");
+                e.Handled = true;
+                return;
+            }
+            if (ctrl && (e.Key == System.Windows.Input.Key.Y || (shift && e.Key == System.Windows.Input.Key.Z)))
+            {
+                var label = _undo.Redo();
+                if (label != null) _toasts.Show($"Redid: {label}");
+                e.Handled = true;
+                return;
+            }
+
+            var row = ItemsGrid.SelectedItem as DustItemRow;
+            if (row == null) return;
+
+            switch (e.Key)
+            {
+                case System.Windows.Input.Key.D:
+                    row.IsSelected = true;
+                    if (AutoAdvanceBox.IsChecked == true)
+                        ItemsGrid.SelectedIndex = System.Math.Min(ItemsGrid.SelectedIndex + 1, ItemsGrid.Items.Count - 1);
+                    e.Handled = true;
+                    break;
+                case System.Windows.Input.Key.K:
+                    AddNeverSuggest(row.CardId,
+                        DustAdvisor.Algorithm.Domain.Premium.Regular,
+                        DustAdvisor.Algorithm.Domain.Premium.Golden,
+                        DustAdvisor.Algorithm.Domain.Premium.Signature);
+                    e.Handled = true;
+                    break;
+                case System.Windows.Input.Key.Space:
+                    row.IsSelected = !row.IsSelected;
+                    e.Handled = true;
+                    break;
+                case System.Windows.Input.Key.Enter:
+                    var item = _plan.Items.FirstOrDefault(x => x.CardId == row.CardId);
+                    if (item != null)
+                    {
+                        var win = new CardDetailWindow(item, _artCache) { Owner = this };
+                        win.Show();
+                    }
+                    e.Handled = true;
+                    break;
+                case System.Windows.Input.Key.Escape:
+                    ClearCart();
+                    e.Handled = true;
+                    break;
+            }
         }
     }
 }
