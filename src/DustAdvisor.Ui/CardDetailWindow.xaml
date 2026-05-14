@@ -1,0 +1,15 @@
+<Window x:Class="DustAdvisor.Ui.CardDetailWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Card" Height="640" Width="440" WindowStartupLocation="CenterOwner">
+  <Grid Margin="12">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <TextBlock x:Name="HeaderText" FontSize="16" FontWeight="Bold" Margin="0,0,0,8"/>
+    <Image x:Name="ArtImage" Grid.Row="1" Stretch="Uniform"/>
+    <TextBlock x:Name="DetailsText" Grid.Row="2" Margin="0,8,0,0" TextWrapping="Wrap"/>
+  </Grid>
+</Window>
