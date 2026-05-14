@@ -28,5 +28,49 @@ namespace DustAdvisor.Data.Tests
             var set = repo.Load(Path.Combine(Path.GetTempPath(), "does-not-exist-" + Guid.NewGuid().ToString("N") + ".json"));
             set.Should().BeEmpty();
         }
+
+        [Fact]
+        public void Save_then_Load_roundtrips()
+        {
+            var path = Path.Combine(Path.GetTempPath(), "never_suggest_test_" + Guid.NewGuid().ToString("N") + ".json");
+            try
+            {
+                var repo = new NeverSuggestRepository();
+                var entries = new[]
+                {
+                    ("EX1_001", Premium.Regular),
+                    ("EX1_002", Premium.Golden),
+                };
+                repo.Save(path, entries);
+
+                var loaded = repo.Load(path);
+                loaded.Should().Contain(("EX1_001", Premium.Regular));
+                loaded.Should().Contain(("EX1_002", Premium.Golden));
+                loaded.Should().HaveCount(2);
+            }
+            finally
+            {
+                if (File.Exists(path)) File.Delete(path);
+            }
+        }
+
+        [Fact]
+        public void Save_writes_atomically_via_temp_file()
+        {
+            var path = Path.Combine(Path.GetTempPath(), "never_suggest_atomic_" + Guid.NewGuid().ToString("N") + ".json");
+            try
+            {
+                File.WriteAllText(path, "[{\"cardId\":\"OLD\",\"premium\":\"Regular\"}]");
+                var repo = new NeverSuggestRepository();
+                repo.Save(path, new[] { ("NEW", Premium.Golden) });
+
+                var loaded = repo.Load(path);
+                loaded.Should().ContainSingle().Which.Should().Be(("NEW", Premium.Golden));
+            }
+            finally
+            {
+                if (File.Exists(path)) File.Delete(path);
+            }
+        }
     }
 }

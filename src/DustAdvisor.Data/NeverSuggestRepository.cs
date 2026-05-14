@@ -28,5 +28,21 @@ namespace DustAdvisor.Data
             }
             return set;
         }
+
+        public void Save(string path, System.Collections.Generic.IEnumerable<(string CardId, Premium Premium)> entries)
+        {
+            var list = new List<Entry>();
+            foreach (var (cardId, premium) in entries)
+                list.Add(new Entry { CardId = cardId, Premium = premium.ToString() });
+
+            var json = JsonConvert.SerializeObject(list, Formatting.Indented);
+            var dir = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
+
+            var tmp = path + ".tmp";
+            File.WriteAllText(tmp, json);
+            if (File.Exists(path)) File.Delete(path);
+            File.Move(tmp, path);
+        }
     }
 }
