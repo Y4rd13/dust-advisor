@@ -22,6 +22,9 @@ namespace DustAdvisor.Ui
         private readonly Func<AdvisorOptions, DustPlan> _recompute;
         private readonly CardArtCache _artCache;
         private bool _ready;
+        private ToastHost _toasts;
+        private readonly DustAdvisor.Ui.Export.SessionLedger _ledger = new DustAdvisor.Ui.Export.SessionLedger();
+        private readonly DustAdvisor.Ui.Export.UndoStack _undo = new DustAdvisor.Ui.Export.UndoStack(maxDepth: 100);
 
         public DustAdvisorWindow(DustPlan plan, Func<AdvisorOptions, DustPlan> recompute, CardArtCache artCache)
         {
@@ -29,6 +32,7 @@ namespace DustAdvisor.Ui
             _plan = plan;
             _recompute = recompute;
             _artCache = artCache;
+            _toasts = new ToastHost(ToastContainer);
             // RotationImminent is in the enum for future use but currently behaves like SafeOnly. Hide it.
             StrategyBox.ItemsSource = new[] { Strategy.SafeOnly, Strategy.MaxDust, Strategy.RefundOnly };
             StrategyBox.SelectedItem = Strategy.SafeOnly;
@@ -183,9 +187,17 @@ namespace DustAdvisor.Ui
 
         private void ConfirmCart()
         {
-            // For v1.1 this is a session marker; we don't modify the game.
-            // The toast notification (Task 13) will give the user a checkpoint with an Undo affordance.
-            ClearCart();
+            var rows = (ItemsGrid.ItemsSource as System.Collections.Generic.IEnumerable<DustItemRow>) ?? new DustItemRow[0];
+            var selected = rows.Where(r => r.IsSelected).ToList();
+            if (selected.Count == 0) return;
+            var dust = selected.Sum(r => r.DustGained);
+            var cardIds = selected.Select(r => r.CardId).ToList();
+            _ledger.RecordConfirm(dust, cardIds);
+            _undo.Push(
+                label: $"marked {cardIds.Count} cards",
+                undo: () => { _ledger.Undo(); foreach (var r in selected) r.IsSelected = true; });
+            foreach (var r in selected) r.IsSelected = false;
+            _toasts.Show($"Marked {cardIds.Count} cards for disenchant ({dust:n0} dust)", onClick: () => { _undo.Undo(); });
         }
 
         private void ClearCart()
