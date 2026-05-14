@@ -12,13 +12,15 @@ namespace DustAdvisor.Data
         private readonly UncraftableRepository _uncraftableRepo;
         private readonly RefundRepository _refundRepo;
         private readonly NeverSuggestRepository _neverSuggestRepo;
+        private readonly MetaTierRepository _metaTierRepo;
 
-        public DataLoader(IHearthstoneJsonClient hsj, UncraftableRepository uncraftableRepo, RefundRepository refundRepo, NeverSuggestRepository neverSuggestRepo)
+        public DataLoader(IHearthstoneJsonClient hsj, UncraftableRepository uncraftableRepo, RefundRepository refundRepo, NeverSuggestRepository neverSuggestRepo, MetaTierRepository metaTierRepo)
         {
             _hsj = hsj;
             _uncraftableRepo = uncraftableRepo;
             _refundRepo = refundRepo;
             _neverSuggestRepo = neverSuggestRepo;
+            _metaTierRepo = metaTierRepo;
         }
 
         public async Task<DataSnapshot> LoadAsync(
@@ -26,6 +28,7 @@ namespace DustAdvisor.Data
             string uncraftablePath,
             string refundPath,
             string neverSuggestPath,
+            string metaTiersPath,
             DateTimeOffset now,
             CancellationToken ct)
         {
@@ -40,7 +43,8 @@ namespace DustAdvisor.Data
             foreach (var n in neverSuggest) merged.Add(n);
 
             var refund = _refundRepo.Load(refundPath, now);
-            return new DataSnapshot(meta, merged, refund);
+            var tiers = _metaTierRepo.Load(metaTiersPath);
+            return new DataSnapshot(meta, merged, refund, tiers);
         }
     }
 }
