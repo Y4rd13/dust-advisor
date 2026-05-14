@@ -21,6 +21,7 @@ namespace DustAdvisor.Ui
         public string Why { get; }
         public string Class { get; }
         public string MetaTier { get; }
+        public string WinRateDisplay { get; }
 
         private BitmapImage _art;
         public BitmapImage Art
@@ -53,6 +54,7 @@ namespace DustAdvisor.Ui
             Why = BuildWhy(item);
             Class = item.Class;
             MetaTier = item.MetaTier;
+            WinRateDisplay = item.WinRate.HasValue ? $"{item.WinRate.Value * 100:0}%" : "";
         }
 
         public async Task EnsureArtLoadedAsync(CardArtCache cache, int size = 256)
