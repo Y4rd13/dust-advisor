@@ -57,6 +57,7 @@ namespace DustAdvisor.Ui
             }
 
             TargetDustBox.TextChanged += (s, e) => Render(_plan);
+            SearchBox.TextChanged += (s, e) => Render(_plan);
 
             ExportCsvButton.Click += (s, e) => SaveAs("CSV (*.csv)|*.csv", DustAdvisor.Ui.Export.CsvExporter.ToCsv(BuildFilteredPlan()));
             ExportJsonButton.Click += (s, e) => SaveAs("JSON (*.json)|*.json", DustAdvisor.Ui.Export.JsonExporter.ToJson(BuildFilteredPlan()));
@@ -112,6 +113,7 @@ namespace DustAdvisor.Ui
             if (RarityLegendaryBox.IsChecked == true) rarities.Add(Rarity.Legendary);
             bool showNormal = ShowNormalBox.IsChecked == true;
             bool showGolden = ShowGoldenBox.IsChecked == true;
+            string searchText = SearchBox.Text ?? "";
 
             foreach (var i in items)
             {
@@ -121,6 +123,7 @@ namespace DustAdvisor.Ui
                 if (!showNormal && i.RegularToDust > 0 && i.GoldenToDust == 0) continue;
                 if (!showGolden && i.GoldenToDust > 0 && i.RegularToDust == 0) continue;
                 if (!showNormal && !showGolden) continue;
+                if (searchText.Length > 0 && i.CardName.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) < 0) continue;
                 yield return i;
             }
         }

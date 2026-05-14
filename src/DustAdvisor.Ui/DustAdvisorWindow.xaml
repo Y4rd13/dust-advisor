@@ -36,6 +36,8 @@
         <CheckBox x:Name="ShowNormalBox" Content="Normal" VerticalAlignment="Center" Margin="0,0,8,0" IsChecked="True"/>
         <CheckBox x:Name="ShowGoldenBox" Content="Golden" VerticalAlignment="Center" IsChecked="True"/>
         <CheckBox x:Name="AutoAdvanceBox" Content="Auto-advance" VerticalAlignment="Center" Margin="16,0,0,0" IsChecked="True"/>
+        <TextBlock Text="Search:" VerticalAlignment="Center" Margin="16,0,4,0"/>
+        <TextBox x:Name="SearchBox" Width="160" VerticalAlignment="Center"/>
       </StackPanel>
 
       <DataGrid x:Name="ItemsGrid" Grid.Row="2" Margin="8" AutoGenerateColumns="False" IsReadOnly="True"
