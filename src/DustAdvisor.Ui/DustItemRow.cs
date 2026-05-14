@@ -18,6 +18,13 @@ namespace DustAdvisor.Ui
         public int DustGained { get; }
         public string Flag { get; }
 
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set { _isSelected = value; PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(IsSelected))); }
+        }
+
         private BitmapImage _art;
         public BitmapImage Art
         {

@@ -50,6 +50,7 @@
         </Style>
       </DataGrid.RowStyle>
       <DataGrid.Columns>
+        <DataGridCheckBoxColumn Header="" Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" Width="32"/>
         <DataGridTextColumn Header="Card" Binding="{Binding Name}" Width="220"/>
         <DataGridTextColumn Header="Rarity" Binding="{Binding Rarity}" Width="90"/>
         <DataGridTextColumn Header="Reg" Binding="{Binding RegularToDust}" Width="50"/>
