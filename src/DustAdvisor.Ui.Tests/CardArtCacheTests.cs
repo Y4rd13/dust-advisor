@@ -53,6 +53,25 @@ namespace DustAdvisor.Ui.Tests
             }
         }
 
+        [Fact]
+        public async Task GetAsync_fetches_url_with_provided_locale()
+        {
+            var cacheDir = Path.Combine(Path.GetTempPath(), "ArtLocale-" + Guid.NewGuid().ToString("N"));
+            try
+            {
+                var stub = new UrlCapturingFetcher { NextBytes = new byte[] { 1 } };
+                var cache = new CardArtCache(stub, cacheDir, locale: "esMX");
+
+                await cache.GetAsync("EX1_001", size: 256, ct: CancellationToken.None);
+
+                stub.LastUrl.Should().Contain("/v1/render/latest/esMX/256x/EX1_001.png");
+            }
+            finally
+            {
+                if (Directory.Exists(cacheDir)) Directory.Delete(cacheDir, recursive: true);
+            }
+        }
+
         private sealed class StubFetcher : IBinaryFetcher
         {
             public byte[] NextBytes { get; set; } = new byte[0];
@@ -62,6 +81,17 @@ namespace DustAdvisor.Ui.Tests
             {
                 CallCount++;
                 if (ShouldThrow) throw new System.Net.Http.HttpRequestException("no network");
+                return Task.FromResult(NextBytes);
+            }
+        }
+
+        private sealed class UrlCapturingFetcher : IBinaryFetcher
+        {
+            public byte[] NextBytes { get; set; } = new byte[0];
+            public string LastUrl { get; private set; }
+            public Task<byte[]> GetBytesAsync(string url, CancellationToken ct)
+            {
+                LastUrl = url;
                 return Task.FromResult(NextBytes);
             }
         }
