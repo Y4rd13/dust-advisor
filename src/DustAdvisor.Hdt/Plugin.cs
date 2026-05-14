@@ -69,9 +69,12 @@ namespace DustAdvisor.Hdt
                 foreach (var m in data.Meta) metaIds.Add(m.CardId);
                 foreach (var c in collection) if (metaIds.Contains(c.CardId)) matched++;
 
+                var deckUsage = BuildDeckUsage();
+
                 Func<DustAdvisor.Algorithm.Domain.AdvisorOptions, DustAdvisor.Algorithm.Domain.DustPlan> recompute = opts =>
                 {
-                    var ins = new DustAdvisor.Algorithm.AdvisorInputs(collection, data.Meta, data.Uncraftable, data.RefundWindow, opts);
+                    var ins = new DustAdvisor.Algorithm.AdvisorInputs(
+                        collection, data.Meta, data.Uncraftable, data.RefundWindow, opts, deckUsage);
                     return new DustAdvisor.Algorithm.Advisor().Recommend(ins);
                 };
                 var initialPlan = recompute(new DustAdvisor.Algorithm.Domain.AdvisorOptions());
@@ -87,6 +90,35 @@ namespace DustAdvisor.Hdt
             {
                 System.Windows.MessageBox.Show(ex.ToString(), "Dust Advisor: error");
             }
+        }
+
+        private static System.Collections.Generic.IReadOnlyDictionary<string, int> BuildDeckUsage()
+        {
+            var usage = new System.Collections.Generic.Dictionary<string, int>();
+            try
+            {
+                var decks = Hearthstone_Deck_Tracker.DeckList.Instance.Decks;
+                if (decks == null) return usage;
+                foreach (var deck in decks)
+                {
+                    if (deck == null) continue;
+                    if (deck.IsArenaDeck) continue;
+                    if (deck.Archived) continue;
+                    var version = deck.GetSelectedDeckVersion();
+                    if (version?.Cards == null) continue;
+                    foreach (var card in version.Cards)
+                    {
+                        if (string.IsNullOrEmpty(card.Id)) continue;
+                        usage.TryGetValue(card.Id, out int n);
+                        usage[card.Id] = n + 1;
+                    }
+                }
+            }
+            catch
+            {
+                // If HDT's DeckList API changes shape, fall back to no deck cross-reference.
+            }
+            return usage;
         }
 
         private static string ReadHdtLocaleOrDefault()
