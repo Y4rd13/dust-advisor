@@ -18,12 +18,17 @@ namespace DustAdvisor.Algorithm
                 if (!metaById.TryGetValue(entry.CardId, out var meta)) continue;
                 if (!meta.IsCollectible) continue;
                 if (meta.Rarity == Rarity.Free) continue;
+                if (meta.Set.IsCore) continue;
 
                 int playset = Constants.PlaysetSize(meta.Rarity);
 
-                // Prefer to keep goldens as the playset; dust regulars first.
-                int keepGolden = System.Math.Min(entry.Golden, playset);
-                int keepRegular = System.Math.Max(0, playset - keepGolden);
+                // Diamond and Signature count toward playset but cannot be dusted (Diamond never;
+                // Signature only via the uncraftable set in a later task).
+                int cosmeticHeld = entry.Diamond + entry.Signature;
+                int playsetRemaining = System.Math.Max(0, playset - cosmeticHeld);
+
+                int keepGolden = System.Math.Min(entry.Golden, playsetRemaining);
+                int keepRegular = System.Math.Max(0, playsetRemaining - keepGolden);
                 int dustRegular = System.Math.Max(0, entry.Regular - keepRegular);
                 int dustGolden = System.Math.Max(0, entry.Golden - keepGolden);
 
