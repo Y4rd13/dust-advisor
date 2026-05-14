@@ -20,9 +20,15 @@ namespace DustAdvisor.Algorithm
                 if (meta.Rarity == Rarity.Free) continue;
 
                 int playset = Constants.PlaysetSize(meta.Rarity);
-                int dustRegular = System.Math.Max(0, entry.Regular - playset);
-                int dustGolden = 0;
-                int dustGained = dustRegular * Constants.DisenchantRegular(meta.Rarity);
+
+                // Prefer to keep goldens as the playset; dust regulars first.
+                int keepGolden = System.Math.Min(entry.Golden, playset);
+                int keepRegular = System.Math.Max(0, playset - keepGolden);
+                int dustRegular = System.Math.Max(0, entry.Regular - keepRegular);
+                int dustGolden = System.Math.Max(0, entry.Golden - keepGolden);
+
+                int dustGained = dustRegular * Constants.DisenchantRegular(meta.Rarity)
+                               + dustGolden * Constants.DisenchantGolden(meta.Rarity);
 
                 if (dustRegular > 0 || dustGolden > 0)
                 {
