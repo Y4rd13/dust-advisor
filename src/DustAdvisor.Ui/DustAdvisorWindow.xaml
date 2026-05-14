@@ -11,7 +11,10 @@
 
     <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="8">
       <TextBlock x:Name="TotalDustLabel" FontSize="22" FontWeight="Bold" Margin="0,0,16,0"/>
-      <TextBlock x:Name="WarningCountLabel" VerticalAlignment="Center" Foreground="DarkOrange"/>
+      <TextBlock x:Name="WarningCountLabel" VerticalAlignment="Center" Foreground="DarkOrange" Margin="0,0,16,0"/>
+      <TextBlock Text="Strategy:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+      <ComboBox x:Name="StrategyBox" VerticalAlignment="Center" Width="160" Margin="0,0,12,0"/>
+      <CheckBox x:Name="KeepStandardBox" Content="Keep Standard-legal" VerticalAlignment="Center" IsChecked="True"/>
     </StackPanel>
 
     <DataGrid x:Name="ItemsGrid" Grid.Row="1" Margin="8" AutoGenerateColumns="False" IsReadOnly="True">

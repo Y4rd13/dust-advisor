@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Windows;
 using DustAdvisor.Algorithm.Domain;
@@ -6,13 +7,20 @@ namespace DustAdvisor.Ui
 {
     public partial class DustAdvisorWindow : Window
     {
-        private readonly DustPlan _plan;
+        private DustPlan _plan;
+        private readonly Func<AdvisorOptions, DustPlan> _recompute;
 
-        public DustAdvisorWindow(DustPlan plan)
+        public DustAdvisorWindow(DustPlan plan, Func<AdvisorOptions, DustPlan> recompute)
         {
             InitializeComponent();
             _plan = plan;
+            _recompute = recompute;
+            StrategyBox.ItemsSource = Enum.GetValues(typeof(Strategy));
+            StrategyBox.SelectedItem = Strategy.SafeOnly;
             Render(plan);
+            StrategyBox.SelectionChanged += (s, e) => Recompute();
+            KeepStandardBox.Checked += (s, e) => Recompute();
+            KeepStandardBox.Unchecked += (s, e) => Recompute();
             ExportCsvButton.Click += (s, e) => SaveAs("CSV (*.csv)|*.csv", DustAdvisor.Ui.Export.CsvExporter.ToCsv(_plan));
             ExportJsonButton.Click += (s, e) => SaveAs("JSON (*.json)|*.json", DustAdvisor.Ui.Export.JsonExporter.ToJson(_plan));
         }
@@ -22,6 +30,15 @@ namespace DustAdvisor.Ui
             TotalDustLabel.Text = $"{plan.TotalDust:n0} dust";
             WarningCountLabel.Text = plan.Warnings.Count > 0 ? $"{plan.Warnings.Count} warning(s)" : string.Empty;
             ItemsGrid.ItemsSource = plan.Items.Select(i => new DustItemRow(i)).ToList();
+        }
+
+        private void Recompute()
+        {
+            var opts = new AdvisorOptions(
+                strategy: (Strategy)StrategyBox.SelectedItem,
+                keepStandardLegal: KeepStandardBox.IsChecked == true);
+            _plan = _recompute(opts);
+            Render(_plan);
         }
 
         private void SaveAs(string filter, string content)

@@ -45,13 +45,13 @@ namespace DustAdvisor.Hdt
                     now: System.DateTimeOffset.UtcNow,
                     ct: System.Threading.CancellationToken.None);
 
-                var inputs = new DustAdvisor.Algorithm.AdvisorInputs(
-                    collection, data.Meta, data.Uncraftable, data.RefundWindow,
-                    new DustAdvisor.Algorithm.Domain.AdvisorOptions());
-
-                var plan = new DustAdvisor.Algorithm.Advisor().Recommend(inputs);
-
-                var win = new DustAdvisor.Ui.DustAdvisorWindow(plan);
+                Func<DustAdvisor.Algorithm.Domain.AdvisorOptions, DustAdvisor.Algorithm.Domain.DustPlan> recompute = opts =>
+                {
+                    var ins = new DustAdvisor.Algorithm.AdvisorInputs(collection, data.Meta, data.Uncraftable, data.RefundWindow, opts);
+                    return new DustAdvisor.Algorithm.Advisor().Recommend(ins);
+                };
+                var initialPlan = recompute(new DustAdvisor.Algorithm.Domain.AdvisorOptions());
+                var win = new DustAdvisor.Ui.DustAdvisorWindow(initialPlan, recompute);
                 win.Show();
             }
             catch (System.Exception ex)
