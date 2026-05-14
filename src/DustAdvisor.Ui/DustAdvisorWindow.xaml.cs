@@ -101,6 +101,7 @@ namespace DustAdvisor.Ui
             WarningCountLabel.Text = plan.Warnings.Count > 0 ? $"{plan.Warnings.Count} warning(s)" : string.Empty;
             ItemsGrid.ItemsSource = visible.Select(i => new DustItemRow(i)).ToList();
             StatusFooter.Text = $"Session: {_ledger.Entries.Count} batches → {_ledger.TotalDust:n0} dust   |   Visible: {visible.Count} of {plan.Items.Count} plan rows";
+            UpdateWastedDustHint();
         }
 
         private IEnumerable<DustItem> ApplyFilters(IReadOnlyList<DustItem> items)
@@ -306,6 +307,26 @@ namespace DustAdvisor.Ui
                 DustAdvisor.Algorithm.Domain.Premium.Regular,
                 DustAdvisor.Algorithm.Domain.Premium.Golden,
                 DustAdvisor.Algorithm.Domain.Premium.Signature);
+        }
+
+        private void UpdateWastedDustHint()
+        {
+            // Only show the hint when current strategy isn't already MaxDust.
+            var current = (Strategy)StrategyBox.SelectedItem;
+            if (current == Strategy.MaxDust)
+            {
+                WastedDustLabel.Text = string.Empty;
+                return;
+            }
+
+            var maxOpts = new AdvisorOptions(
+                strategy: Strategy.MaxDust,
+                keepStandardLegal: KeepStandardBox.IsChecked == true);
+            var maxPlan = _recompute(maxOpts);
+            int delta = maxPlan.TotalDust - _plan.TotalDust;
+            WastedDustLabel.Text = delta > 0
+                ? $"+{delta:n0} dust available if you switch to MaxDust"
+                : string.Empty;
         }
 
         private void DustAdvisorWindow_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
