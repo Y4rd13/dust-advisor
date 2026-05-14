@@ -7,10 +7,11 @@
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>  <!-- 0: header -->
         <RowDefinition Height="Auto"/>  <!-- 1: filter row -->
-        <RowDefinition Height="*"/>     <!-- 2: data grid -->
-        <RowDefinition Height="Auto"/>  <!-- 3: confirm bar -->
-        <RowDefinition Height="Auto"/>  <!-- 4: status footer -->
-        <RowDefinition Height="Auto"/>  <!-- 5: export buttons -->
+        <RowDefinition Height="Auto"/>  <!-- 2: class filter row -->
+        <RowDefinition Height="*"/>     <!-- 3: data grid -->
+        <RowDefinition Height="Auto"/>  <!-- 4: confirm bar -->
+        <RowDefinition Height="Auto"/>  <!-- 5: status footer -->
+        <RowDefinition Height="Auto"/>  <!-- 6: export buttons -->
       </Grid.RowDefinitions>
 
       <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="8">
@@ -41,7 +42,23 @@
         <TextBox x:Name="SearchBox" Width="160" VerticalAlignment="Center"/>
       </StackPanel>
 
-      <DataGrid x:Name="ItemsGrid" Grid.Row="2" Margin="8" AutoGenerateColumns="False" IsReadOnly="True"
+      <WrapPanel Grid.Row="2" Margin="8,0,8,8">
+        <TextBlock Text="Class:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+        <CheckBox x:Name="ClassDruidBox" Content="Druid" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="ClassHunterBox" Content="Hunter" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="ClassMageBox" Content="Mage" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="ClassPaladinBox" Content="Paladin" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="ClassPriestBox" Content="Priest" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="ClassRogueBox" Content="Rogue" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="ClassShamanBox" Content="Shaman" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="ClassWarlockBox" Content="Warlock" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="ClassWarriorBox" Content="Warrior" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="ClassDhBox" Content="DH" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="ClassDkBox" Content="DK" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="ClassNeutralBox" Content="Neutral" IsChecked="True"/>
+      </WrapPanel>
+
+      <DataGrid x:Name="ItemsGrid" Grid.Row="3" Margin="8" AutoGenerateColumns="False" IsReadOnly="True"
                 ToolTipService.InitialShowDelay="300" ToolTipService.ShowDuration="20000">
         <DataGrid.RowStyle>
           <Style TargetType="DataGridRow">
@@ -75,7 +92,7 @@
         </DataGrid.Columns>
       </DataGrid>
 
-      <Border x:Name="ConfirmBar" Grid.Row="3" Background="#FFFFEFB0" BorderBrush="DarkGoldenrod"
+      <Border x:Name="ConfirmBar" Grid.Row="4" Background="#FFFFEFB0" BorderBrush="DarkGoldenrod"
               BorderThickness="0,1,0,1" Padding="8" Visibility="Collapsed">
         <StackPanel Orientation="Horizontal">
           <TextBlock x:Name="ConfirmText" VerticalAlignment="Center" FontWeight="Bold"/>
@@ -86,9 +103,9 @@
         </StackPanel>
       </Border>
 
-      <TextBlock x:Name="StatusFooter" Grid.Row="4" Margin="8,4,8,0" Foreground="DimGray" FontSize="11"/>
+      <TextBlock x:Name="StatusFooter" Grid.Row="5" Margin="8,4,8,0" Foreground="DimGray" FontSize="11"/>
 
-      <StackPanel Orientation="Horizontal" Grid.Row="5" Margin="8" HorizontalAlignment="Right">
+      <StackPanel Orientation="Horizontal" Grid.Row="6" Margin="8" HorizontalAlignment="Right">
         <Button x:Name="ExportCsvButton" Content="Export CSV" Padding="8,4" Margin="0,0,8,0"/>
         <Button x:Name="ExportJsonButton" Content="Export JSON" Padding="8,4"/>
       </StackPanel>

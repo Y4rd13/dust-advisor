@@ -19,6 +19,7 @@ namespace DustAdvisor.Ui
         public int InDeckCount { get; }
         public string Flag { get; }
         public string Why { get; }
+        public string Class { get; }
 
         private BitmapImage _art;
         public BitmapImage Art
@@ -49,6 +50,7 @@ namespace DustAdvisor.Ui
                  : item.IsStandardLegal ? "STANDARD"
                  : "WILD";
             Why = BuildWhy(item);
+            Class = item.Class;
         }
 
         public async Task EnsureArtLoadedAsync(CardArtCache cache, int size = 256)

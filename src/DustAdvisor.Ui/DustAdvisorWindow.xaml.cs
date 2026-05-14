@@ -54,6 +54,15 @@ namespace DustAdvisor.Ui
                 box.Unchecked += refilter;
             }
 
+            foreach (var box in new[] {
+                ClassDruidBox, ClassHunterBox, ClassMageBox, ClassPaladinBox, ClassPriestBox,
+                ClassRogueBox, ClassShamanBox, ClassWarlockBox, ClassWarriorBox,
+                ClassDhBox, ClassDkBox, ClassNeutralBox })
+            {
+                box.Checked += refilter;
+                box.Unchecked += refilter;
+            }
+
             TargetDustBox.TextChanged += (s, e) => Render(_plan);
             SearchBox.TextChanged += (s, e) => Render(_plan);
 
@@ -118,6 +127,20 @@ namespace DustAdvisor.Ui
             bool showGolden = ShowGoldenBox.IsChecked == true;
             string searchText = SearchBox.Text ?? "";
 
+            var classes = new HashSet<string>();
+            if (ClassDruidBox.IsChecked == true) classes.Add("DRUID");
+            if (ClassHunterBox.IsChecked == true) classes.Add("HUNTER");
+            if (ClassMageBox.IsChecked == true) classes.Add("MAGE");
+            if (ClassPaladinBox.IsChecked == true) classes.Add("PALADIN");
+            if (ClassPriestBox.IsChecked == true) classes.Add("PRIEST");
+            if (ClassRogueBox.IsChecked == true) classes.Add("ROGUE");
+            if (ClassShamanBox.IsChecked == true) classes.Add("SHAMAN");
+            if (ClassWarlockBox.IsChecked == true) classes.Add("WARLOCK");
+            if (ClassWarriorBox.IsChecked == true) classes.Add("WARRIOR");
+            if (ClassDhBox.IsChecked == true) classes.Add("DEMONHUNTER");
+            if (ClassDkBox.IsChecked == true) classes.Add("DEATHKNIGHT");
+            if (ClassNeutralBox.IsChecked == true) classes.Add("NEUTRAL");
+
             foreach (var i in items)
             {
                 if (!rarities.Contains(i.Rarity)) continue;
@@ -127,6 +150,7 @@ namespace DustAdvisor.Ui
                 if (!showGolden && i.GoldenToDust > 0 && i.RegularToDust == 0) continue;
                 if (!showNormal && !showGolden) continue;
                 if (searchText.Length > 0 && i.CardName.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) < 0) continue;
+                if (!classes.Contains(i.Class ?? "NEUTRAL")) continue;
                 yield return i;
             }
         }
