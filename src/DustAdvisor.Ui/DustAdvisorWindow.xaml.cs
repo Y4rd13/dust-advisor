@@ -141,5 +141,17 @@ namespace DustAdvisor.Ui
                 await item.EnsureArtLoadedAsync(_artCache);
             }
         }
+
+        private void DataGridRow_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (sender is System.Windows.Controls.DataGridRow row && row.DataContext is DustItemRow uirow)
+            {
+                // Find the matching DustItem (the row VM doesn't keep a reference to it).
+                var item = _plan.Items.FirstOrDefault(x => x.CardId == uirow.CardId);
+                if (item == null) return;
+                var win = new CardDetailWindow(item, _artCache) { Owner = this };
+                win.Show();
+            }
+        }
     }
 }
