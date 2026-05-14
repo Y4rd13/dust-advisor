@@ -412,5 +412,41 @@ namespace DustAdvisor.Algorithm.Tests
             item.RegularToDust.Should().Be(3);
             item.InDeckCount.Should().Be(0);
         }
+
+        [Fact]
+        public void RotationImminent_keeps_only_rotating_cards()
+        {
+            var meta = CardFixtures.CommonWild("ROT_001", 900);
+            var other = CardFixtures.CommonWild("OTHER_001", 901);
+            var inputs = new AdvisorInputs(
+                collection: new[]
+                {
+                    new CollectionEntry("ROT_001", regular: 5),
+                    new CollectionEntry("OTHER_001", regular: 5),
+                },
+                meta: new[] { meta, other },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions(strategy: Strategy.RotationImminent),
+                rotatingCardIds: new HashSet<string> { "ROT_001" });
+
+            var items = new Advisor().Recommend(inputs).Items;
+            items.Should().ContainSingle().Which.CardId.Should().Be("ROT_001");
+        }
+
+        [Fact]
+        public void RotationImminent_returns_empty_when_rotating_set_is_empty()
+        {
+            var meta = CardFixtures.CommonWild("OTHER_001", 902);
+            var inputs = new AdvisorInputs(
+                collection: new[] { new CollectionEntry("OTHER_001", regular: 5) },
+                meta: new[] { meta },
+                uncraftable: new HashSet<(string, Premium)>(),
+                refundWindow: new HashSet<string>(),
+                options: new AdvisorOptions(strategy: Strategy.RotationImminent),
+                rotatingCardIds: new HashSet<string>());
+
+            new Advisor().Recommend(inputs).Items.Should().BeEmpty();
+        }
     }
 }
