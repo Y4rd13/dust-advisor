@@ -65,7 +65,13 @@
           <DataGridTextColumn Header="Gold" Binding="{Binding GoldenToDust}" Width="55"/>
           <DataGridTextColumn Header="Dust" Binding="{Binding DustGained}" Width="80"/>
           <DataGridTextColumn Header="In Decks" Binding="{Binding InDeckCount}" Width="60"/>
-          <DataGridTextColumn Header="Flag" Binding="{Binding Flag}" Width="100"/>
+          <DataGridTextColumn Header="Flag" Binding="{Binding Flag}" Width="100">
+            <DataGridTextColumn.ElementStyle>
+              <Style TargetType="TextBlock">
+                <Setter Property="ToolTip" Value="{Binding Why}"/>
+              </Style>
+            </DataGridTextColumn.ElementStyle>
+          </DataGridTextColumn>
         </DataGrid.Columns>
       </DataGrid>
 
