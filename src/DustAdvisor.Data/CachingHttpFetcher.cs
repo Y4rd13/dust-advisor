@@ -9,6 +9,8 @@ namespace DustAdvisor.Data
 {
     public sealed class CachingHttpFetcher : IHttpFetcher
     {
+        public static readonly TimeSpan MaxAge = TimeSpan.FromDays(7);
+
         private readonly IHttpFetcher _inner;
         private readonly string _cacheDir;
 
@@ -22,6 +24,14 @@ namespace DustAdvisor.Data
         public async Task<string> GetAsync(string url, CancellationToken ct)
         {
             var path = CachePath(url);
+
+            // Fresh cache: serve from disk without calling the network.
+            if (File.Exists(path))
+            {
+                var ageOk = (DateTime.UtcNow - File.GetLastWriteTimeUtc(path)) <= MaxAge;
+                if (ageOk) return File.ReadAllText(path, Encoding.UTF8);
+            }
+
             try
             {
                 var fresh = await _inner.GetAsync(url, ct).ConfigureAwait(false);
