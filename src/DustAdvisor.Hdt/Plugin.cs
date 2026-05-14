@@ -64,10 +64,10 @@ namespace DustAdvisor.Hdt
                     return;
                 }
 
-                int matched = 0;
                 var metaIds = new System.Collections.Generic.HashSet<string>();
                 foreach (var m in data.Meta) metaIds.Add(m.CardId);
-                foreach (var c in collection) if (metaIds.Contains(c.CardId)) matched++;
+                int missingMetaCount = 0;
+                foreach (var c in collection) if (!metaIds.Contains(c.CardId)) missingMetaCount++;
 
                 var deckUsage = BuildDeckUsage();
 
@@ -75,7 +75,15 @@ namespace DustAdvisor.Hdt
                 {
                     var ins = new DustAdvisor.Algorithm.AdvisorInputs(
                         collection, data.Meta, data.Uncraftable, data.RefundWindow, opts, deckUsage);
-                    return new DustAdvisor.Algorithm.Advisor().Recommend(ins);
+                    var plan = new DustAdvisor.Algorithm.Advisor().Recommend(ins);
+                    if (missingMetaCount > 0)
+                    {
+                        var warnings = new System.Collections.Generic.List<DustAdvisor.Algorithm.Domain.Warning>(plan.Warnings);
+                        warnings.Add(new DustAdvisor.Algorithm.Domain.Warning("__metadata__",
+                            $"{missingMetaCount} cards in your collection have no metadata yet (recently added; not in HearthstoneJSON cache)."));
+                        plan = new DustAdvisor.Algorithm.Domain.DustPlan(plan.Items, warnings, plan.TotalDust);
+                    }
+                    return plan;
                 };
                 var initialPlan = recompute(new DustAdvisor.Algorithm.Domain.AdvisorOptions());
                 var artCache = new DustAdvisor.Ui.Export.CardArtCache(
@@ -83,7 +91,9 @@ namespace DustAdvisor.Hdt
                     PluginPaths.CardArtDir,
                     locale: locale);
                 var win = new DustAdvisor.Ui.DustAdvisorWindow(initialPlan, recompute, artCache, PluginPaths.NeverSuggestFile);
-                win.Title = $"Dust Advisor — {collection.Count} cards read, {matched} matched metadata";
+                win.Title = missingMetaCount > 0
+                    ? $"Dust Advisor — {collection.Count} cards read ({missingMetaCount} missing metadata)"
+                    : $"Dust Advisor — {collection.Count} cards read";
                 win.Show();
             }
             catch (System.Exception ex)
