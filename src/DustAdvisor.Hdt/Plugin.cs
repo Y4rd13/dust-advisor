@@ -27,23 +27,6 @@ namespace DustAdvisor.Hdt
         {
             try
             {
-                var collection = CollectionSnapshotReader.Read();
-
-                if (collection.Count == 0)
-                {
-                    System.Windows.MessageBox.Show(
-                        "HearthMirror returned 0 cards.\n\n" +
-                        "Make sure:\n" +
-                        "  1. Hearthstone is running.\n" +
-                        "  2. You have opened the in-game Collection screen at least once this session " +
-                        "(this triggers HDT's memory snapshot).\n" +
-                        "  3. HDT itself is communicating with the game (check the bottom-left status in HDT).\n\n" +
-                        "If the issue persists, the HDT log at %APPDATA%\\HearthstoneDeckTracker\\Logs\\ " +
-                        "may show ScryMemoryAccessException errors — those indicate the HearthMirror RPC is failing.",
-                        "Dust Advisor: no collection data");
-                    return;
-                }
-
                 var http = new DustAdvisor.Data.CachingHttpFetcher(
                     new DustAdvisor.Data.HttpClientFetcher(new System.Net.Http.HttpClient()),
                     PluginPaths.CacheDir);
@@ -59,6 +42,24 @@ namespace DustAdvisor.Hdt
                     refundPath: PluginPaths.RefundFile,
                     now: System.DateTimeOffset.UtcNow,
                     ct: System.Threading.CancellationToken.None);
+
+                var collection = await CollectionSnapshotReader.ReadAsync(data.Meta);
+
+                if (collection.Count == 0)
+                {
+                    System.Windows.MessageBox.Show(
+                        "Could not read collection from Hearthstone.\n\n" +
+                        "Make sure:\n" +
+                        "  1. Hearthstone is running and you are logged in.\n" +
+                        "  2. You opened the in-game Collection screen at least once this session.\n" +
+                        "  3. HDT shows the game as connected (bottom-left of the main HDT window).\n\n" +
+                        "If the HDT log at %APPDATA%\\HearthstoneDeckTracker\\Logs\\ shows " +
+                        "ScryMemoryAccessException errors, HearthMirror is failing to read the " +
+                        "Hearthstone process. Try: close both HDT and Hearthstone, start HDT first, " +
+                        "then start Hearthstone, wait at the main menu, open My Collection, then retry.",
+                        "Dust Advisor: no collection data");
+                    return;
+                }
 
                 int matched = 0;
                 var metaIds = new System.Collections.Generic.HashSet<string>();
