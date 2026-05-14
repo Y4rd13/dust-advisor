@@ -20,6 +20,7 @@ namespace DustAdvisor.Ui
         public string Flag { get; }
         public string Why { get; }
         public string Class { get; }
+        public string MetaTier { get; }
 
         private BitmapImage _art;
         public BitmapImage Art
@@ -51,6 +52,7 @@ namespace DustAdvisor.Ui
                  : "WILD";
             Why = BuildWhy(item);
             Class = item.Class;
+            MetaTier = item.MetaTier;
         }
 
         public async Task EnsureArtLoadedAsync(CardArtCache cache, int size = 256)

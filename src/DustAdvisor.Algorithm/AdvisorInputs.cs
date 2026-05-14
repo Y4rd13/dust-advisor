@@ -11,6 +11,7 @@ namespace DustAdvisor.Algorithm
         public IReadOnlyCollection<string> RefundWindow { get; }
         public IReadOnlyDictionary<string, int> DeckUsage { get; }
         public IReadOnlyCollection<string> RotatingCardIds { get; }
+        public IReadOnlyDictionary<string, string> MetaTiers { get; }
         public AdvisorOptions Options { get; }
 
         public AdvisorInputs(
@@ -20,7 +21,8 @@ namespace DustAdvisor.Algorithm
             IReadOnlyCollection<string> refundWindow,
             AdvisorOptions options,
             IReadOnlyDictionary<string, int> deckUsage = null,
-            IReadOnlyCollection<string> rotatingCardIds = null)
+            IReadOnlyCollection<string> rotatingCardIds = null,
+            IReadOnlyDictionary<string, string> metaTiers = null)
         {
             Collection = collection;
             Meta = meta;
@@ -29,6 +31,7 @@ namespace DustAdvisor.Algorithm
             Options = options;
             DeckUsage = deckUsage ?? new Dictionary<string, int>();
             RotatingCardIds = rotatingCardIds ?? new HashSet<string>();
+            MetaTiers = metaTiers ?? new Dictionary<string, string>();
         }
     }
 }
