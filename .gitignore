@@ -1,0 +1,30 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+.vs/
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+
+# Cache directories
+.cache/
+artifacts/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Plugin runtime data
+**/cache/cards.collectible.json
