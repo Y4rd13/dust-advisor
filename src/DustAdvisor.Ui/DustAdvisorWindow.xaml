@@ -3,78 +3,82 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Dust Advisor" Height="720" Width="760">
   <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="Auto"/>
-    </Grid.RowDefinitions>
+    <Grid x:Name="MainGrid">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
 
-    <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="8">
-      <TextBlock x:Name="TotalDustLabel" FontSize="22" FontWeight="Bold" Margin="0,0,16,0"/>
-      <TextBlock x:Name="WarningCountLabel" VerticalAlignment="Center" Foreground="DarkOrange" Margin="0,0,16,0"/>
-      <TextBlock Text="Strategy:" VerticalAlignment="Center" Margin="0,0,4,0"/>
-      <ComboBox x:Name="StrategyBox" VerticalAlignment="Center" Width="160" Margin="0,0,12,0"/>
-      <CheckBox x:Name="KeepStandardBox" Content="Keep Standard-legal" VerticalAlignment="Center" IsChecked="True"/>
-      <TextBlock Text="Target dust:" VerticalAlignment="Center" Margin="16,0,4,0"/>
-      <TextBox x:Name="TargetDustBox" Width="80" VerticalAlignment="Center"/>
-      <TextBlock x:Name="TargetStatusLabel" VerticalAlignment="Center" Margin="8,0,0,0" Foreground="Gray"/>
-    </StackPanel>
-
-    <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="8,0,8,8">
-      <TextBlock Text="Format:" VerticalAlignment="Center" Margin="0,0,4,0"/>
-      <ComboBox x:Name="FormatBox" VerticalAlignment="Center" Width="120" Margin="0,0,16,0"/>
-      <TextBlock Text="Rarity:" VerticalAlignment="Center" Margin="0,0,4,0"/>
-      <CheckBox x:Name="RarityCommonBox" Content="Common" VerticalAlignment="Center" Margin="0,0,8,0" IsChecked="True"/>
-      <CheckBox x:Name="RarityRareBox" Content="Rare" VerticalAlignment="Center" Margin="0,0,8,0" IsChecked="True"/>
-      <CheckBox x:Name="RarityEpicBox" Content="Epic" VerticalAlignment="Center" Margin="0,0,8,0" IsChecked="True"/>
-      <CheckBox x:Name="RarityLegendaryBox" Content="Legendary" VerticalAlignment="Center" Margin="0,0,16,0" IsChecked="True"/>
-      <TextBlock Text="Premium:" VerticalAlignment="Center" Margin="0,0,4,0"/>
-      <CheckBox x:Name="ShowNormalBox" Content="Normal" VerticalAlignment="Center" Margin="0,0,8,0" IsChecked="True"/>
-      <CheckBox x:Name="ShowGoldenBox" Content="Golden" VerticalAlignment="Center" IsChecked="True"/>
-    </StackPanel>
-
-    <DataGrid x:Name="ItemsGrid" Grid.Row="2" Margin="8" AutoGenerateColumns="False" IsReadOnly="True"
-              ToolTipService.InitialShowDelay="300" ToolTipService.ShowDuration="20000">
-      <DataGrid.RowStyle>
-        <Style TargetType="DataGridRow">
-          <Setter Property="ToolTip">
-            <Setter.Value>
-              <ToolTip Background="Transparent" BorderThickness="0" Placement="Mouse">
-                <Image Source="{Binding Art}" Width="260" Height="380" Stretch="Uniform"/>
-              </ToolTip>
-            </Setter.Value>
-          </Setter>
-          <EventSetter Event="MouseEnter" Handler="DataGridRow_MouseEnter"/>
-          <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
-        </Style>
-      </DataGrid.RowStyle>
-      <DataGrid.Columns>
-        <DataGridCheckBoxColumn Header="" Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" Width="32"/>
-        <DataGridTextColumn Header="Card" Binding="{Binding Name}" Width="220"/>
-        <DataGridTextColumn Header="Rarity" Binding="{Binding Rarity}" Width="90"/>
-        <DataGridTextColumn Header="Reg" Binding="{Binding RegularToDust}" Width="50"/>
-        <DataGridTextColumn Header="Gold" Binding="{Binding GoldenToDust}" Width="55"/>
-        <DataGridTextColumn Header="Dust" Binding="{Binding DustGained}" Width="80"/>
-        <DataGridTextColumn Header="Flag" Binding="{Binding Flag}" Width="100"/>
-      </DataGrid.Columns>
-    </DataGrid>
-
-    <Border x:Name="ConfirmBar" Grid.Row="3" Background="#FFFFEFB0" BorderBrush="DarkGoldenrod"
-            BorderThickness="0,1,0,1" Padding="8" Visibility="Collapsed">
-      <StackPanel Orientation="Horizontal">
-        <TextBlock x:Name="ConfirmText" VerticalAlignment="Center" FontWeight="Bold"/>
-        <Button x:Name="ConfirmButton" Content="Confirm" Padding="8,4" Margin="16,0,8,0"/>
-        <Button x:Name="ClearCartButton" Content="Clear" Padding="8,4"/>
-        <TextBlock Text="(plugin doesn't dust for you — disenchant in-game manually)"
-                   VerticalAlignment="Center" Margin="16,0,0,0" Foreground="DarkSlateGray" FontStyle="Italic"/>
+      <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="8">
+        <TextBlock x:Name="TotalDustLabel" FontSize="22" FontWeight="Bold" Margin="0,0,16,0"/>
+        <TextBlock x:Name="WarningCountLabel" VerticalAlignment="Center" Foreground="DarkOrange" Margin="0,0,16,0"/>
+        <TextBlock Text="Strategy:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+        <ComboBox x:Name="StrategyBox" VerticalAlignment="Center" Width="160" Margin="0,0,12,0"/>
+        <CheckBox x:Name="KeepStandardBox" Content="Keep Standard-legal" VerticalAlignment="Center" IsChecked="True"/>
+        <TextBlock Text="Target dust:" VerticalAlignment="Center" Margin="16,0,4,0"/>
+        <TextBox x:Name="TargetDustBox" Width="80" VerticalAlignment="Center"/>
+        <TextBlock x:Name="TargetStatusLabel" VerticalAlignment="Center" Margin="8,0,0,0" Foreground="Gray"/>
       </StackPanel>
-    </Border>
 
-    <StackPanel Orientation="Horizontal" Grid.Row="4" Margin="8" HorizontalAlignment="Right">
-      <Button x:Name="ExportCsvButton" Content="Export CSV" Padding="8,4" Margin="0,0,8,0"/>
-      <Button x:Name="ExportJsonButton" Content="Export JSON" Padding="8,4"/>
-    </StackPanel>
+      <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="8,0,8,8">
+        <TextBlock Text="Format:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+        <ComboBox x:Name="FormatBox" VerticalAlignment="Center" Width="120" Margin="0,0,16,0"/>
+        <TextBlock Text="Rarity:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+        <CheckBox x:Name="RarityCommonBox" Content="Common" VerticalAlignment="Center" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="RarityRareBox" Content="Rare" VerticalAlignment="Center" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="RarityEpicBox" Content="Epic" VerticalAlignment="Center" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="RarityLegendaryBox" Content="Legendary" VerticalAlignment="Center" Margin="0,0,16,0" IsChecked="True"/>
+        <TextBlock Text="Premium:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+        <CheckBox x:Name="ShowNormalBox" Content="Normal" VerticalAlignment="Center" Margin="0,0,8,0" IsChecked="True"/>
+        <CheckBox x:Name="ShowGoldenBox" Content="Golden" VerticalAlignment="Center" IsChecked="True"/>
+      </StackPanel>
+
+      <DataGrid x:Name="ItemsGrid" Grid.Row="2" Margin="8" AutoGenerateColumns="False" IsReadOnly="True"
+                ToolTipService.InitialShowDelay="300" ToolTipService.ShowDuration="20000">
+        <DataGrid.RowStyle>
+          <Style TargetType="DataGridRow">
+            <Setter Property="ToolTip">
+              <Setter.Value>
+                <ToolTip Background="Transparent" BorderThickness="0" Placement="Mouse">
+                  <Image Source="{Binding Art}" Width="260" Height="380" Stretch="Uniform"/>
+                </ToolTip>
+              </Setter.Value>
+            </Setter>
+            <EventSetter Event="MouseEnter" Handler="DataGridRow_MouseEnter"/>
+            <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
+          </Style>
+        </DataGrid.RowStyle>
+        <DataGrid.Columns>
+          <DataGridCheckBoxColumn Header="" Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" Width="32"/>
+          <DataGridTextColumn Header="Card" Binding="{Binding Name}" Width="220"/>
+          <DataGridTextColumn Header="Rarity" Binding="{Binding Rarity}" Width="90"/>
+          <DataGridTextColumn Header="Reg" Binding="{Binding RegularToDust}" Width="50"/>
+          <DataGridTextColumn Header="Gold" Binding="{Binding GoldenToDust}" Width="55"/>
+          <DataGridTextColumn Header="Dust" Binding="{Binding DustGained}" Width="80"/>
+          <DataGridTextColumn Header="Flag" Binding="{Binding Flag}" Width="100"/>
+        </DataGrid.Columns>
+      </DataGrid>
+
+      <Border x:Name="ConfirmBar" Grid.Row="3" Background="#FFFFEFB0" BorderBrush="DarkGoldenrod"
+              BorderThickness="0,1,0,1" Padding="8" Visibility="Collapsed">
+        <StackPanel Orientation="Horizontal">
+          <TextBlock x:Name="ConfirmText" VerticalAlignment="Center" FontWeight="Bold"/>
+          <Button x:Name="ConfirmButton" Content="Confirm" Padding="8,4" Margin="16,0,8,0"/>
+          <Button x:Name="ClearCartButton" Content="Clear" Padding="8,4"/>
+          <TextBlock Text="(plugin doesn't dust for you — disenchant in-game manually)"
+                     VerticalAlignment="Center" Margin="16,0,0,0" Foreground="DarkSlateGray" FontStyle="Italic"/>
+        </StackPanel>
+      </Border>
+
+      <StackPanel Orientation="Horizontal" Grid.Row="4" Margin="8" HorizontalAlignment="Right">
+        <Button x:Name="ExportCsvButton" Content="Export CSV" Padding="8,4" Margin="0,0,8,0"/>
+        <Button x:Name="ExportJsonButton" Content="Export JSON" Padding="8,4"/>
+      </StackPanel>
+    </Grid>
+    <StackPanel x:Name="ToastContainer" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Margin="0,0,16,16" IsHitTestVisible="True"/>
   </Grid>
 </Window>
