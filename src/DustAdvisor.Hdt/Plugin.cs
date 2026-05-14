@@ -29,6 +29,21 @@ namespace DustAdvisor.Hdt
             {
                 var collection = CollectionSnapshotReader.Read();
 
+                if (collection.Count == 0)
+                {
+                    System.Windows.MessageBox.Show(
+                        "HearthMirror returned 0 cards.\n\n" +
+                        "Make sure:\n" +
+                        "  1. Hearthstone is running.\n" +
+                        "  2. You have opened the in-game Collection screen at least once this session " +
+                        "(this triggers HDT's memory snapshot).\n" +
+                        "  3. HDT itself is communicating with the game (check the bottom-left status in HDT).\n\n" +
+                        "If the issue persists, the HDT log at %APPDATA%\\HearthstoneDeckTracker\\Logs\\ " +
+                        "may show ScryMemoryAccessException errors — those indicate the HearthMirror RPC is failing.",
+                        "Dust Advisor: no collection data");
+                    return;
+                }
+
                 var http = new DustAdvisor.Data.CachingHttpFetcher(
                     new DustAdvisor.Data.HttpClientFetcher(new System.Net.Http.HttpClient()),
                     PluginPaths.CacheDir);
@@ -45,6 +60,11 @@ namespace DustAdvisor.Hdt
                     now: System.DateTimeOffset.UtcNow,
                     ct: System.Threading.CancellationToken.None);
 
+                int matched = 0;
+                var metaIds = new System.Collections.Generic.HashSet<string>();
+                foreach (var m in data.Meta) metaIds.Add(m.CardId);
+                foreach (var c in collection) if (metaIds.Contains(c.CardId)) matched++;
+
                 Func<DustAdvisor.Algorithm.Domain.AdvisorOptions, DustAdvisor.Algorithm.Domain.DustPlan> recompute = opts =>
                 {
                     var ins = new DustAdvisor.Algorithm.AdvisorInputs(collection, data.Meta, data.Uncraftable, data.RefundWindow, opts);
@@ -52,6 +72,7 @@ namespace DustAdvisor.Hdt
                 };
                 var initialPlan = recompute(new DustAdvisor.Algorithm.Domain.AdvisorOptions());
                 var win = new DustAdvisor.Ui.DustAdvisorWindow(initialPlan, recompute);
+                win.Title = $"Dust Advisor — {collection.Count} cards read, {matched} matched metadata";
                 win.Show();
             }
             catch (System.Exception ex)
