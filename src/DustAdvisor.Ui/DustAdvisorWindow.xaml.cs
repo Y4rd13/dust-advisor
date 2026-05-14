@@ -25,13 +25,16 @@ namespace DustAdvisor.Ui
         private ToastHost _toasts;
         private readonly DustAdvisor.Ui.Export.SessionLedger _ledger = new DustAdvisor.Ui.Export.SessionLedger();
         private readonly DustAdvisor.Ui.Export.UndoStack _undo = new DustAdvisor.Ui.Export.UndoStack(maxDepth: 100);
+        private readonly DustAdvisor.Data.NeverSuggestRepository _neverRepo = new DustAdvisor.Data.NeverSuggestRepository();
+        private readonly string _neverSuggestPath;
 
-        public DustAdvisorWindow(DustPlan plan, Func<AdvisorOptions, DustPlan> recompute, CardArtCache artCache)
+        public DustAdvisorWindow(DustPlan plan, Func<AdvisorOptions, DustPlan> recompute, CardArtCache artCache, string neverSuggestPath)
         {
             InitializeComponent();
             _plan = plan;
             _recompute = recompute;
             _artCache = artCache;
+            _neverSuggestPath = neverSuggestPath;
             _toasts = new ToastHost(ToastContainer);
             // RotationImminent is in the enum for future use but currently behaves like SafeOnly. Hide it.
             StrategyBox.ItemsSource = new[] { Strategy.SafeOnly, Strategy.MaxDust, Strategy.RefundOnly };
@@ -206,6 +209,94 @@ namespace DustAdvisor.Ui
             {
                 foreach (var r in rows) r.IsSelected = false;
             }
+        }
+
+        private void DataGridRow_ContextMenuOpening(object sender, System.Windows.Controls.ContextMenuEventArgs e)
+        {
+            if (!(sender is System.Windows.Controls.DataGridRow dgRow)) return;
+            // Build (or rebuild) the ContextMenu in code-behind so Click handlers wire cleanly.
+            var cm = new System.Windows.Controls.ContextMenu();
+            var miOpen = new System.Windows.Controls.MenuItem { Header = "Open in HearthstoneJSON" };
+            miOpen.Click += ContextOpenBrowser_Click;
+            cm.Items.Add(miOpen);
+            cm.Items.Add(new System.Windows.Controls.Separator());
+            var miReg = new System.Windows.Controls.MenuItem { Header = "Never suggest (Regular)" };
+            miReg.Click += ContextNeverRegular_Click;
+            cm.Items.Add(miReg);
+            var miGold = new System.Windows.Controls.MenuItem { Header = "Never suggest (Golden)" };
+            miGold.Click += ContextNeverGolden_Click;
+            cm.Items.Add(miGold);
+            var miAny = new System.Windows.Controls.MenuItem { Header = "Never suggest (any premium)" };
+            miAny.Click += ContextNeverAny_Click;
+            cm.Items.Add(miAny);
+            // PlacementTarget must be the row itself so GetContextRow can navigate back.
+            cm.PlacementTarget = dgRow;
+            dgRow.ContextMenu = cm;
+        }
+
+        private DustItemRow GetContextRow(object sender)
+        {
+            // sender is a MenuItem; navigate up to DataGridRow via ContextMenu.PlacementTarget.
+            if (sender is System.Windows.Controls.MenuItem mi
+                && mi.Parent is System.Windows.Controls.ContextMenu cm
+                && cm.PlacementTarget is System.Windows.FrameworkElement fe
+                && fe.DataContext is DustItemRow row)
+                return row;
+            return null;
+        }
+
+        private void ContextOpenBrowser_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var row = GetContextRow(sender);
+            if (row == null) return;
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = $"https://hearthstonejson.com/cards/{row.CardId}",
+                    UseShellExecute = true,
+                });
+            }
+            catch { /* swallow; best-effort */ }
+        }
+
+        private void AddNeverSuggest(string cardId, params DustAdvisor.Algorithm.Domain.Premium[] tiers)
+        {
+            var existing = new System.Collections.Generic.HashSet<(string, DustAdvisor.Algorithm.Domain.Premium)>(
+                _neverRepo.Load(_neverSuggestPath));
+            foreach (var t in tiers) existing.Add((cardId, t));
+            _neverRepo.Save(_neverSuggestPath, existing);
+            // Remove the row from the visible list (next recompute will exclude it too).
+            if (ItemsGrid.ItemsSource is System.Collections.Generic.IEnumerable<DustItemRow> rows)
+                ItemsGrid.ItemsSource = rows.Where(r => r.CardId != cardId).ToList();
+            _toasts.Show($"Never suggest: {cardId}", onClick: () =>
+            {
+                var rollback = new System.Collections.Generic.HashSet<(string, DustAdvisor.Algorithm.Domain.Premium)>(_neverRepo.Load(_neverSuggestPath));
+                foreach (var t in tiers) rollback.Remove((cardId, t));
+                _neverRepo.Save(_neverSuggestPath, rollback);
+                _toasts.Show($"Restored: {cardId}");
+            });
+        }
+
+        private void ContextNeverRegular_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var row = GetContextRow(sender);
+            if (row != null) AddNeverSuggest(row.CardId, DustAdvisor.Algorithm.Domain.Premium.Regular);
+        }
+
+        private void ContextNeverGolden_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var row = GetContextRow(sender);
+            if (row != null) AddNeverSuggest(row.CardId, DustAdvisor.Algorithm.Domain.Premium.Golden);
+        }
+
+        private void ContextNeverAny_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var row = GetContextRow(sender);
+            if (row != null) AddNeverSuggest(row.CardId,
+                DustAdvisor.Algorithm.Domain.Premium.Regular,
+                DustAdvisor.Algorithm.Domain.Premium.Golden,
+                DustAdvisor.Algorithm.Domain.Premium.Signature);
         }
     }
 }

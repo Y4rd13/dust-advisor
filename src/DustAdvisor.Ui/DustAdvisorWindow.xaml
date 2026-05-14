@@ -49,6 +49,7 @@
             </Setter>
             <EventSetter Event="MouseEnter" Handler="DataGridRow_MouseEnter"/>
             <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
+            <EventSetter Event="ContextMenuOpening" Handler="DataGridRow_ContextMenuOpening"/>
           </Style>
         </DataGrid.RowStyle>
         <DataGrid.Columns>

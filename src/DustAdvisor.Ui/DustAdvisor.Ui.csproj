@@ -10,6 +10,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DustAdvisor.Algorithm\DustAdvisor.Algorithm.csproj" />
+    <ProjectReference Include="..\DustAdvisor.Data\DustAdvisor.Data.csproj" />
     <ProjectReference Include="..\DustAdvisor.Ui.Export\DustAdvisor.Ui.Export.csproj" />
   </ItemGroup>
 </Project>
