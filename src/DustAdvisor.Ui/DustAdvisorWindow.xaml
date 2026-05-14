@@ -8,6 +8,7 @@
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
       <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
     <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="8">
@@ -60,7 +61,18 @@
       </DataGrid.Columns>
     </DataGrid>
 
-    <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="8" HorizontalAlignment="Right">
+    <Border x:Name="ConfirmBar" Grid.Row="3" Background="#FFFFEFB0" BorderBrush="DarkGoldenrod"
+            BorderThickness="0,1,0,1" Padding="8" Visibility="Collapsed">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock x:Name="ConfirmText" VerticalAlignment="Center" FontWeight="Bold"/>
+        <Button x:Name="ConfirmButton" Content="Confirm" Padding="8,4" Margin="16,0,8,0"/>
+        <Button x:Name="ClearCartButton" Content="Clear" Padding="8,4"/>
+        <TextBlock Text="(plugin doesn't dust for you — disenchant in-game manually)"
+                   VerticalAlignment="Center" Margin="16,0,0,0" Foreground="DarkSlateGray" FontStyle="Italic"/>
+      </StackPanel>
+    </Border>
+
+    <StackPanel Orientation="Horizontal" Grid.Row="4" Margin="8" HorizontalAlignment="Right">
       <Button x:Name="ExportCsvButton" Content="Export CSV" Padding="8,4" Margin="0,0,8,0"/>
       <Button x:Name="ExportJsonButton" Content="Export JSON" Padding="8,4"/>
     </StackPanel>

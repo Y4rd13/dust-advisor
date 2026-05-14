@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using DustAdvisor.Algorithm.Domain;
 using DustAdvisor.Ui.Export;
 
@@ -52,6 +53,10 @@ namespace DustAdvisor.Ui
 
             ExportCsvButton.Click += (s, e) => SaveAs("CSV (*.csv)|*.csv", DustAdvisor.Ui.Export.CsvExporter.ToCsv(BuildFilteredPlan()));
             ExportJsonButton.Click += (s, e) => SaveAs("JSON (*.json)|*.json", DustAdvisor.Ui.Export.JsonExporter.ToJson(BuildFilteredPlan()));
+
+            CompositionTarget.Rendering += (s, e) => UpdateConfirmBar();
+            ConfirmButton.Click += (s, e) => ConfirmCart();
+            ClearCartButton.Click += (s, e) => ClearCart();
         }
 
         public void Render(DustPlan plan)
@@ -151,6 +156,43 @@ namespace DustAdvisor.Ui
                 if (item == null) return;
                 var win = new CardDetailWindow(item, _artCache) { Owner = this };
                 win.Show();
+            }
+        }
+
+        private void UpdateConfirmBar()
+        {
+            if (ItemsGrid.ItemsSource is System.Collections.Generic.IEnumerable<DustItemRow> rows)
+            {
+                int selected = 0;
+                int dust = 0;
+                foreach (var r in rows)
+                {
+                    if (r.IsSelected) { selected++; dust += r.DustGained; }
+                }
+                if (selected > 0)
+                {
+                    ConfirmText.Text = $"{selected} cards selected = {dust:n0} dust";
+                    ConfirmBar.Visibility = System.Windows.Visibility.Visible;
+                }
+                else
+                {
+                    ConfirmBar.Visibility = System.Windows.Visibility.Collapsed;
+                }
+            }
+        }
+
+        private void ConfirmCart()
+        {
+            // For v1.1 this is a session marker; we don't modify the game.
+            // The toast notification (Task 13) will give the user a checkpoint with an Undo affordance.
+            ClearCart();
+        }
+
+        private void ClearCart()
+        {
+            if (ItemsGrid.ItemsSource is System.Collections.Generic.IEnumerable<DustItemRow> rows)
+            {
+                foreach (var r in rows) r.IsSelected = false;
             }
         }
     }
