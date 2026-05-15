@@ -86,7 +86,13 @@ namespace DustAdvisor.Algorithm
                         inDeckCount: inDeckCount,
                         @class: meta.Class,
                         metaTier: metaTier,
-                        winRate: winRate));
+                        winRate: winRate,
+                        ownedRegular: entry.Regular,
+                        ownedGolden: entry.Golden,
+                        ownedDiamond: entry.Diamond,
+                        ownedSignature: entry.Signature,
+                        unitRegular: unitRegular,
+                        unitGolden: unitGolden));
                     totalDust += dustGained;
                 }
             }
