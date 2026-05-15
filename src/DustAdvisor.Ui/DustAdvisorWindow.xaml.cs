@@ -75,6 +75,12 @@ namespace DustAdvisor.Ui
             this.PreviewKeyDown += DustAdvisorWindow_PreviewKeyDown;
         }
 
+        private void HelpButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var help = new HelpWindow { Owner = this };
+            help.ShowDialog();
+        }
+
         public void Render(DustPlan plan)
         {
             if (!_ready) return;
@@ -88,11 +94,13 @@ namespace DustAdvisor.Ui
                 var optimized = DustAdvisor.Algorithm.TargetDustOptimizer.Optimize(filtered, t);
                 visible = optimized.Items;
                 TargetStatusLabel.Text = optimized.TargetMet
-                    ? $"{optimized.AchievedDust:n0} / {t:n0} target ({visible.Count} cards)"
-                    : $"{optimized.AchievedDust:n0} / {t:n0} target — not enough safe dust";
-                TargetStatusLabel.Foreground = optimized.TargetMet
-                    ? System.Windows.Media.Brushes.DarkGreen
-                    : System.Windows.Media.Brushes.OrangeRed;
+                    ? Localization.Format("DA_TargetStatus_Met_Fmt",
+                        optimized.AchievedDust.ToString("n0"), t.ToString("n0"), visible.Count)
+                    : Localization.Format("DA_TargetStatus_NotMet_Fmt",
+                        optimized.AchievedDust.ToString("n0"), t.ToString("n0"));
+                TargetStatusLabel.Foreground =
+                    (System.Windows.Media.Brush)TryFindResource(optimized.TargetMet ? "SuccessBrush" : "WarningBrush")
+                    ?? (optimized.TargetMet ? System.Windows.Media.Brushes.LightGreen : System.Windows.Media.Brushes.OrangeRed);
             }
             else
             {
@@ -102,16 +110,20 @@ namespace DustAdvisor.Ui
 
             var visibleDust = visible.Sum(i => i.DustGained);
             TotalDustLabel.Text = (target.HasValue || visible.Count != plan.Items.Count)
-                ? $"{visibleDust:n0} dust  (of {plan.TotalDust:n0} unfiltered)"
-                : $"{plan.TotalDust:n0} dust";
-            WarningCountLabel.Text = plan.Warnings.Count > 0 ? $"{plan.Warnings.Count} warning(s)" : string.Empty;
+                ? Localization.Format("DA_TotalDust_Filtered_Fmt",
+                    visibleDust.ToString("n0"), plan.TotalDust.ToString("n0"))
+                : Localization.Format("DA_TotalDust_Fmt", plan.TotalDust.ToString("n0"));
+            WarningCountLabel.Text = plan.Warnings.Count > 0
+                ? Localization.Format("DA_Warning_Count_Fmt", plan.Warnings.Count)
+                : string.Empty;
             ItemsGrid.ItemsSource = visible.Select(i => new DustItemRow(i)).ToList();
             foreach (var row in (System.Collections.Generic.IEnumerable<DustItemRow>)ItemsGrid.ItemsSource)
             {
                 row.PropertyChanged += Row_PropertyChanged;
             }
             UpdateConfirmBar();
-            StatusFooter.Text = $"Session: {_ledger.Entries.Count} batches → {_ledger.TotalDust:n0} dust   |   Visible: {visible.Count} of {plan.Items.Count} plan rows";
+            StatusFooter.Text = Localization.Format("DA_StatusFooter_Fmt",
+                _ledger.Entries.Count, _ledger.TotalDust.ToString("n0"), visible.Count, plan.Items.Count);
             UpdateWastedDustHint();
         }
 
@@ -211,7 +223,7 @@ namespace DustAdvisor.Ui
                 }
                 if (selected > 0)
                 {
-                    ConfirmText.Text = $"{selected} cards selected = {dust:n0} dust";
+                    ConfirmText.Text = Localization.Format("DA_Confirm_Selected_Fmt", selected, dust.ToString("n0"));
                     ConfirmBar.Visibility = System.Windows.Visibility.Visible;
                 }
                 else
@@ -230,10 +242,12 @@ namespace DustAdvisor.Ui
             var cardIds = selected.Select(r => r.CardId).ToList();
             _ledger.RecordConfirm(dust, cardIds);
             _undo.Push(
-                label: $"marked {cardIds.Count} cards",
+                label: Localization.Format("DA_Undo_Marked_Fmt", cardIds.Count),
                 undo: () => { _ledger.Undo(); foreach (var r in selected) r.IsSelected = true; });
             foreach (var r in selected) r.IsSelected = false;
-            _toasts.Show($"Marked {cardIds.Count} cards for disenchant ({dust:n0} dust)", onClick: () => { _undo.Undo(); });
+            _toasts.Show(
+                Localization.Format("DA_Toast_Marked_Fmt", cardIds.Count, dust.ToString("n0")),
+                onClick: () => { _undo.Undo(); });
             Render(_plan);
         }
 
@@ -251,17 +265,17 @@ namespace DustAdvisor.Ui
             if (!(sender is System.Windows.Controls.DataGridRow dgRow)) return;
             // Build (or rebuild) the ContextMenu in code-behind so Click handlers wire cleanly.
             var cm = new System.Windows.Controls.ContextMenu();
-            var miOpen = new System.Windows.Controls.MenuItem { Header = "Open in HearthstoneJSON" };
+            var miOpen = new System.Windows.Controls.MenuItem { Header = Localization.Get("DA_Menu_OpenInBrowser") };
             miOpen.Click += ContextOpenBrowser_Click;
             cm.Items.Add(miOpen);
             cm.Items.Add(new System.Windows.Controls.Separator());
-            var miReg = new System.Windows.Controls.MenuItem { Header = "Never suggest (Regular)" };
+            var miReg = new System.Windows.Controls.MenuItem { Header = Localization.Get("DA_Menu_NeverRegular") };
             miReg.Click += ContextNeverRegular_Click;
             cm.Items.Add(miReg);
-            var miGold = new System.Windows.Controls.MenuItem { Header = "Never suggest (Golden)" };
+            var miGold = new System.Windows.Controls.MenuItem { Header = Localization.Get("DA_Menu_NeverGolden") };
             miGold.Click += ContextNeverGolden_Click;
             cm.Items.Add(miGold);
-            var miAny = new System.Windows.Controls.MenuItem { Header = "Never suggest (any premium)" };
+            var miAny = new System.Windows.Controls.MenuItem { Header = Localization.Get("DA_Menu_NeverAny") };
             miAny.Click += ContextNeverAny_Click;
             cm.Items.Add(miAny);
             // PlacementTarget must be the row itself so GetContextRow can navigate back.
@@ -304,12 +318,12 @@ namespace DustAdvisor.Ui
             // Remove the row from the visible list (next recompute will exclude it too).
             if (ItemsGrid.ItemsSource is System.Collections.Generic.IEnumerable<DustItemRow> rows)
                 ItemsGrid.ItemsSource = rows.Where(r => r.CardId != cardId).ToList();
-            _toasts.Show($"Never suggest: {cardId}", onClick: () =>
+            _toasts.Show(Localization.Format("DA_Toast_NeverSuggest_Fmt", cardId), onClick: () =>
             {
                 var rollback = new System.Collections.Generic.HashSet<(string, DustAdvisor.Algorithm.Domain.Premium)>(_neverRepo.Load(_neverSuggestPath));
                 foreach (var t in tiers) rollback.Remove((cardId, t));
                 _neverRepo.Save(_neverSuggestPath, rollback);
-                _toasts.Show($"Restored: {cardId}");
+                _toasts.Show(Localization.Format("DA_Toast_Restored_Fmt", cardId));
             });
             Render(_plan);
         }
@@ -351,7 +365,7 @@ namespace DustAdvisor.Ui
             var maxPlan = _recompute(maxOpts);
             int delta = maxPlan.TotalDust - _plan.TotalDust;
             WastedDustLabel.Text = delta > 0
-                ? $"+{delta:n0} dust available if you switch to MaxDust"
+                ? Localization.Format("DA_WastedDust_Fmt", delta.ToString("n0"))
                 : string.Empty;
         }
 
@@ -372,14 +386,14 @@ namespace DustAdvisor.Ui
             if (ctrl && e.Key == System.Windows.Input.Key.Z && !shift)
             {
                 var label = _undo.Undo();
-                if (label != null) _toasts.Show($"Undid: {label}");
+                if (label != null) _toasts.Show(Localization.Format("DA_Toast_Undid_Fmt", label));
                 e.Handled = true;
                 return;
             }
             if (ctrl && (e.Key == System.Windows.Input.Key.Y || (shift && e.Key == System.Windows.Input.Key.Z)))
             {
                 var label = _undo.Redo();
-                if (label != null) _toasts.Show($"Redid: {label}");
+                if (label != null) _toasts.Show(Localization.Format("DA_Toast_Redid_Fmt", label));
                 e.Handled = true;
                 return;
             }
