@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build, package and release
+    runs-on: windows-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Restore
+        run: dotnet restore src/DustAdvisor.sln
+
+      - name: Build
+        run: dotnet build src/DustAdvisor.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test src/DustAdvisor.sln -c Release --no-build --verbosity normal
+
+      - name: Stage release artifacts
+        shell: pwsh
+        run: |
+          $stage = "release/DustAdvisor"
+          New-Item -ItemType Directory -Force -Path $stage | Out-Null
+          $src = "src/DustAdvisor.Hdt/bin/Release/net48"
+          $dlls = @(
+            "DustAdvisor.dll",
+            "DustAdvisor.Algorithm.dll",
+            "DustAdvisor.Data.dll",
+            "DustAdvisor.Ui.dll",
+            "DustAdvisor.Ui.Export.dll",
+            "Newtonsoft.Json.dll"
+          )
+          foreach ($f in $dlls) {
+            $path = Join-Path $src $f
+            if (!(Test-Path $path)) { throw "Missing build output: $path" }
+            Copy-Item $path -Destination $stage
+          }
+          Copy-Item -Recurse data -Destination "$stage/data"
+          Copy-Item README.md -Destination $stage
+          Copy-Item LICENSE -Destination $stage
+          Compress-Archive -Path "$stage/*" -DestinationPath "release/DustAdvisor.zip" -Force
+          Get-ChildItem release/DustAdvisor.zip | Format-List Name, Length
+
+      - name: Semantic release
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          semantic_version: 24
+          extra_plugins: |
+            @semantic-release/changelog@6
+            @semantic-release/git@10
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
