@@ -28,6 +28,7 @@ namespace DustAdvisor.Hdt
             try
             {
                 string locale = ReadHdtLocaleOrDefault();
+                DustAdvisor.Ui.Localization.EnsureLoaded(locale);
                 var http = new DustAdvisor.Data.CachingHttpFetcher(
                     new DustAdvisor.Data.HttpClientFetcher(new System.Net.Http.HttpClient()),
                     PluginPaths.CacheDir);
@@ -53,16 +54,8 @@ namespace DustAdvisor.Hdt
                 if (collection.Count == 0)
                 {
                     System.Windows.MessageBox.Show(
-                        "Could not read collection from Hearthstone.\n\n" +
-                        "Make sure:\n" +
-                        "  1. Hearthstone is running and you are logged in.\n" +
-                        "  2. You opened the in-game Collection screen at least once this session.\n" +
-                        "  3. HDT shows the game as connected (bottom-left of the main HDT window).\n\n" +
-                        "If the HDT log at %APPDATA%\\HearthstoneDeckTracker\\Logs\\ shows " +
-                        "ScryMemoryAccessException errors, HearthMirror is failing to read the " +
-                        "Hearthstone process. Try: close both HDT and Hearthstone, start HDT first, " +
-                        "then start Hearthstone, wait at the main menu, open My Collection, then retry.",
-                        "Dust Advisor: no collection data");
+                        DustAdvisor.Ui.Localization.Get("DA_Error_NoCollection_Body"),
+                        DustAdvisor.Ui.Localization.Get("DA_Error_NoCollection_Caption"));
                     return;
                 }
 
@@ -109,7 +102,7 @@ namespace DustAdvisor.Hdt
                     {
                         var warnings = new System.Collections.Generic.List<DustAdvisor.Algorithm.Domain.Warning>(plan.Warnings);
                         warnings.Add(new DustAdvisor.Algorithm.Domain.Warning("__metadata__",
-                            $"{missingMetaCount} cards in your collection have no metadata yet (recently added; not in HearthstoneJSON cache)."));
+                            DustAdvisor.Ui.Localization.Format("DA_Warning_MissingMeta_Fmt", missingMetaCount)));
                         plan = new DustAdvisor.Algorithm.Domain.DustPlan(plan.Items, warnings, plan.TotalDust);
                     }
                     return plan;
@@ -121,13 +114,14 @@ namespace DustAdvisor.Hdt
                     locale: locale);
                 var win = new DustAdvisor.Ui.DustAdvisorWindow(initialPlan, recompute, artCache, PluginPaths.NeverSuggestFile);
                 win.Title = missingMetaCount > 0
-                    ? $"Dust Advisor — {collection.Count} cards read ({missingMetaCount} missing metadata)"
-                    : $"Dust Advisor — {collection.Count} cards read";
+                    ? DustAdvisor.Ui.Localization.Format("DA_Title_WithMissing_Fmt", collection.Count, missingMetaCount)
+                    : DustAdvisor.Ui.Localization.Format("DA_Title_Fmt", collection.Count);
                 win.Show();
             }
             catch (System.Exception ex)
             {
-                System.Windows.MessageBox.Show(ex.ToString(), "Dust Advisor: error");
+                System.Windows.MessageBox.Show(ex.ToString(),
+                    DustAdvisor.Ui.Localization.Get("DA_Error_Generic_Caption"));
             }
         }
 

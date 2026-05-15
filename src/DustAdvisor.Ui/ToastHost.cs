@@ -19,17 +19,20 @@ namespace DustAdvisor.Ui
         {
             var border = new Border
             {
-                Background = new SolidColorBrush(Color.FromArgb(0xEE, 0x33, 0x33, 0x33)),
+                Background = new SolidColorBrush(Color.FromArgb(0xF0, 0x2D, 0x2D, 0x2D)),
+                BorderBrush = new SolidColorBrush(Color.FromRgb(0xC5, 0xA5, 0x72)),
+                BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(4),
-                Padding = new Thickness(10, 6, 10, 6),
+                Padding = new Thickness(12, 7, 12, 7),
                 Margin = new Thickness(0, 4, 0, 0),
                 Cursor = onClick != null ? System.Windows.Input.Cursors.Hand : System.Windows.Input.Cursors.Arrow,
             };
             var text = new TextBlock
             {
                 Text = message,
-                Foreground = Brushes.White,
+                Foreground = new SolidColorBrush(Color.FromRgb(0xE8, 0xE4, 0xD9)),
                 FontSize = 12,
+                FontFamily = new FontFamily("Segoe UI"),
             };
             border.Child = text;
             if (onClick != null)

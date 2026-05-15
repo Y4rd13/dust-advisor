@@ -1,0 +1,176 @@
+<Window x:Class="DustAdvisor.Ui.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource DA_Help_Title}"
+        Height="640" Width="640"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource BgPrimaryBrush}"
+        Foreground="{DynamicResource FgPrimaryBrush}"
+        TextOptions.TextFormattingMode="Display"
+        UseLayoutRounding="True"
+        ShowInTaskbar="False">
+  <Window.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Themes/DarkTheme.xaml"/>
+      </ResourceDictionary.MergedDictionaries>
+      <Style x:Key="H1" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="{StaticResource AccentGoldBrush}"/>
+        <Setter Property="Margin" Value="0,0,0,8"/>
+      </Style>
+      <Style x:Key="H2" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource AccentGoldBrightBrush}"/>
+        <Setter Property="Margin" Value="0,14,0,4"/>
+      </Style>
+      <Style x:Key="Body" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12.5"/>
+        <Setter Property="Foreground" Value="{StaticResource FgPrimaryBrush}"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Margin" Value="0,0,0,6"/>
+        <Setter Property="LineHeight" Value="18"/>
+      </Style>
+      <Style x:Key="Muted" TargetType="TextBlock" BasedOn="{StaticResource Body}">
+        <Setter Property="Foreground" Value="{StaticResource FgSecondaryBrush}"/>
+        <Setter Property="FontStyle" Value="Italic"/>
+      </Style>
+      <Style x:Key="Code" TargetType="Run">
+        <Setter Property="FontFamily" Value="Consolas"/>
+        <Setter Property="Foreground" Value="{StaticResource AccentGoldBrightBrush}"/>
+      </Style>
+      <Style x:Key="Bullet" TargetType="TextBlock" BasedOn="{StaticResource Body}">
+        <Setter Property="Margin" Value="14,0,0,4"/>
+      </Style>
+    </ResourceDictionary>
+  </Window.Resources>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <Border Grid.Row="0" Background="{StaticResource BgSecondaryBrush}"
+            BorderBrush="{StaticResource BorderAccentBrush}" BorderThickness="0,0,0,1"
+            Padding="20,14">
+      <StackPanel>
+        <TextBlock Style="{StaticResource H1}" Text="{DynamicResource DA_Help_Title}"/>
+        <TextBlock Style="{StaticResource Muted}"
+                   Text="{DynamicResource DA_Help_Subtitle}"/>
+      </StackPanel>
+    </Border>
+
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20,12">
+      <StackPanel>
+
+        <TextBlock Style="{StaticResource H2}" Text="{DynamicResource DA_Help_H_What}"/>
+        <TextBlock Style="{StaticResource Body}"
+                   Text="{DynamicResource DA_Help_What_Body}"/>
+        <TextBlock Style="{StaticResource Muted}"
+                   Text="{DynamicResource DA_Help_What_Note}"/>
+
+        <TextBlock Style="{StaticResource H2}" Text="{DynamicResource DA_Help_H_Reads}"/>
+        <TextBlock Style="{StaticResource Body}"
+                   Text="{DynamicResource DA_Help_Reads_Body}"/>
+
+        <TextBlock Style="{StaticResource H2}" Text="{DynamicResource DA_Help_H_Decides}"/>
+        <TextBlock Style="{StaticResource Body}">
+          <Run Text="{DynamicResource DA_Help_Decides_Body_Pre}"/><Run Style="{StaticResource Code}" Text="{DynamicResource DA_Help_Decides_Strategy}"/><Run Text="{DynamicResource DA_Help_Decides_Body_Post}"/>
+        </TextBlock>
+        <TextBlock Style="{StaticResource Bullet}" Text="{DynamicResource DA_Help_Decides_Bullet_Common}"/>
+        <TextBlock Style="{StaticResource Bullet}" Text="{DynamicResource DA_Help_Decides_Bullet_Rare}"/>
+        <TextBlock Style="{StaticResource Bullet}" Text="{DynamicResource DA_Help_Decides_Bullet_Epic}"/>
+        <TextBlock Style="{StaticResource Bullet}" Text="{DynamicResource DA_Help_Decides_Bullet_Legendary}"/>
+        <TextBlock Style="{StaticResource Body}"
+                   Text="{DynamicResource DA_Help_Decides_Refund}"/>
+
+        <TextBlock Style="{StaticResource H2}" Text="{DynamicResource DA_Help_H_Strategies}"/>
+        <TextBlock Style="{StaticResource Body}">
+          <Run FontWeight="SemiBold" Foreground="{DynamicResource AccentGoldBrush}" Text="{DynamicResource DA_Help_Strat_SafeOnly_Name}"/><Run Text="{DynamicResource DA_Help_Strat_SafeOnly_Desc}"/>
+        </TextBlock>
+        <TextBlock Style="{StaticResource Body}">
+          <Run FontWeight="SemiBold" Foreground="{DynamicResource AccentGoldBrush}" Text="{DynamicResource DA_Help_Strat_SafeOnlyUnused_Name}"/><Run Text="{DynamicResource DA_Help_Strat_SafeOnlyUnused_Desc}"/>
+        </TextBlock>
+        <TextBlock Style="{StaticResource Body}">
+          <Run FontWeight="SemiBold" Foreground="{DynamicResource AccentGoldBrush}" Text="{DynamicResource DA_Help_Strat_RotationImminent_Name}"/><Run Text="{DynamicResource DA_Help_Strat_RotationImminent_Desc}"/>
+        </TextBlock>
+        <TextBlock Style="{StaticResource Body}">
+          <Run FontWeight="SemiBold" Foreground="{DynamicResource AccentGoldBrush}" Text="{DynamicResource DA_Help_Strat_MaxDust_Name}"/><Run Text="{DynamicResource DA_Help_Strat_MaxDust_Desc}"/>
+        </TextBlock>
+        <TextBlock Style="{StaticResource Body}">
+          <Run FontWeight="SemiBold" Foreground="{DynamicResource AccentGoldBrush}" Text="{DynamicResource DA_Help_Strat_RefundOnly_Name}"/><Run Text="{DynamicResource DA_Help_Strat_RefundOnly_Desc}"/>
+        </TextBlock>
+
+        <TextBlock Style="{StaticResource H2}" Text="{DynamicResource DA_Help_H_Flags}"/>
+        <TextBlock Style="{StaticResource Body}">
+          <Run FontWeight="SemiBold" Foreground="{DynamicResource AccentGoldBrightBrush}" Text="{DynamicResource DA_Help_Flag_InDeck_Name}"/><Run Text="{DynamicResource DA_Help_Flag_InDeck_Desc}"/>
+        </TextBlock>
+        <TextBlock Style="{StaticResource Body}">
+          <Run FontWeight="SemiBold" Foreground="{DynamicResource AccentGoldBrightBrush}" Text="{DynamicResource DA_Help_Flag_Refund_Name}"/><Run Text="{DynamicResource DA_Help_Flag_Refund_Desc}"/>
+        </TextBlock>
+        <TextBlock Style="{StaticResource Body}">
+          <Run FontWeight="SemiBold" Foreground="{DynamicResource AccentGoldBrightBrush}" Text="{DynamicResource DA_Help_Flag_Standard_Name}"/><Run Text="{DynamicResource DA_Help_Flag_Standard_Desc}"/>
+        </TextBlock>
+        <TextBlock Style="{StaticResource Body}">
+          <Run FontWeight="SemiBold" Foreground="{DynamicResource AccentGoldBrightBrush}" Text="{DynamicResource DA_Help_Flag_Wild_Name}"/><Run Text="{DynamicResource DA_Help_Flag_Wild_Desc}"/>
+        </TextBlock>
+
+        <TextBlock Style="{StaticResource H2}" Text="{DynamicResource DA_Help_H_Uncraftable}"/>
+        <TextBlock Style="{StaticResource Body}"
+                   Text="{DynamicResource DA_Help_Uncraftable_Body}"/>
+
+        <TextBlock Style="{StaticResource H2}" Text="{DynamicResource DA_Help_H_Owned}"/>
+        <TextBlock Style="{StaticResource Body}">
+          <Run Text="{DynamicResource DA_Help_Owned_Body_Pre}"/><Run Style="{StaticResource Code}" Text="{DynamicResource DA_Help_Owned_Body_Example}"/><Run Text="{DynamicResource DA_Help_Owned_Body_Post}"/>
+        </TextBlock>
+
+        <TextBlock Style="{StaticResource H2}" Text="{DynamicResource DA_Help_H_TierWr}"/>
+        <TextBlock Style="{StaticResource Body}">
+          <Run FontWeight="SemiBold" Foreground="{DynamicResource AccentGoldBrush}" Text="{DynamicResource DA_Help_Tier_Label}"/><Run Text="{DynamicResource DA_Help_Tier_Body_Pre}"/><Run Style="{StaticResource Code}" Text="{DynamicResource DA_Help_Tier_Body_File}"/><Run Text="{DynamicResource DA_Help_Tier_Body_Post}"/>
+        </TextBlock>
+        <TextBlock Style="{StaticResource Body}">
+          <Run FontWeight="SemiBold" Foreground="{DynamicResource AccentGoldBrush}" Text="{DynamicResource DA_Help_Wr_Label}"/><Run Text="{DynamicResource DA_Help_Wr_Body}"/>
+        </TextBlock>
+
+        <TextBlock Style="{StaticResource H2}" Text="{DynamicResource DA_Help_H_Cart}"/>
+        <TextBlock Style="{StaticResource Body}"
+                   Text="{DynamicResource DA_Help_Cart_Body}"/>
+
+        <TextBlock Style="{StaticResource H2}" Text="{DynamicResource DA_Help_H_Shortcuts}"/>
+        <TextBlock Style="{StaticResource Bullet}" Text="{DynamicResource DA_Help_Shortcut_DoubleClick}"/>
+        <TextBlock Style="{StaticResource Bullet}" Text="{DynamicResource DA_Help_Shortcut_Hover}"/>
+        <TextBlock Style="{StaticResource Bullet}" Text="{DynamicResource DA_Help_Shortcut_RightClick}"/>
+        <TextBlock Style="{StaticResource Bullet}" Text="{DynamicResource DA_Help_Shortcut_AutoAdvance}"/>
+
+        <TextBlock Style="{StaticResource H2}" Text="{DynamicResource DA_Help_H_Limitations}"/>
+        <TextBlock Style="{StaticResource Bullet}" Text="{DynamicResource DA_Help_Limitation_Windows}"/>
+        <TextBlock Style="{StaticResource Bullet}" Text="{DynamicResource DA_Help_Limitation_NoAuto}"/>
+        <TextBlock Style="{StaticResource Bullet}" Text="{DynamicResource DA_Help_Limitation_NewPatterns}"/>
+
+        <TextBlock Style="{StaticResource H2}" Text="{DynamicResource DA_Help_H_Sources}"/>
+        <TextBlock Style="{StaticResource Bullet}">
+          <Run Text="{DynamicResource DA_Help_Source_Hsj_Pre}"/><Run Style="{StaticResource Code}" Text="{DynamicResource DA_Help_Source_Hsj_Code}"/><Run Text="{DynamicResource DA_Help_Source_Hsj_Post}"/>
+        </TextBlock>
+        <TextBlock Style="{StaticResource Bullet}" Text="{DynamicResource DA_Help_Source_HearthMirror}"/>
+        <TextBlock Style="{StaticResource Bullet}">
+          <Run Text="{DynamicResource DA_Help_Source_DeckList_Pre}"/><Run Style="{StaticResource Code}" Text="{DynamicResource DA_Help_Source_DeckList_Code}"/><Run Text="{DynamicResource DA_Help_Source_DeckList_Post}"/>
+        </TextBlock>
+        <TextBlock Style="{StaticResource Bullet}">
+          <Run Text="{DynamicResource DA_Help_Source_DeckStats_Pre}"/><Run Style="{StaticResource Code}" Text="{DynamicResource DA_Help_Source_DeckStats_Code}"/><Run Text="{DynamicResource DA_Help_Source_DeckStats_Post}"/>
+        </TextBlock>
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <Border Grid.Row="2" Background="{StaticResource BgSecondaryBrush}"
+            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="20,10">
+        <Button x:Name="CloseButton" Content="{DynamicResource DA_Help_Close}" Padding="20,6" Click="CloseButton_Click"/>
+      </StackPanel>
+    </Border>
+  </Grid>
+</Window>

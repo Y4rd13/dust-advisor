@@ -1,0 +1,214 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+  <!-- Window titles -->
+  <sys:String x:Key="DA_Title_Fmt">Dust Advisor — {0} cartas leídas</sys:String>
+  <sys:String x:Key="DA_Title_WithMissing_Fmt">Dust Advisor — {0} cartas leídas ({1} sin metadatos)</sys:String>
+
+  <!-- Header bar -->
+  <sys:String x:Key="DA_Tooltip_TotalDust">Total de dust que ganarías si desencantas TODAS las cartas visibles según el plan actual.</sys:String>
+  <sys:String x:Key="DA_Tooltip_WarningCount">Cantidad de cartas marcadas con advertencia (típicamente Standard-legal omitidas por SafeOnly).</sys:String>
+  <sys:String x:Key="DA_Label_Strategy">Estrategia:</sys:String>
+  <sys:String x:Key="DA_Tooltip_Strategy" xml:space="preserve">Cómo el plan elige qué copias dustear:&#x0a;• SafeOnly — solo extras, mantén tu playset jugable&#x0a;• SafeOnlyUnused — además omite cartas en tus mazos&#x0a;• RotationImminent — solo cartas rotando a Wild el próximo año&#x0a;• MaxDust — maximiza dust (dustea Doradas primero)&#x0a;• RefundOnly — solo cartas en ventana de refund (post-nerf)</sys:String>
+  <sys:String x:Key="DA_Label_KeepStandard">Mantener Standard-legal</sys:String>
+  <sys:String x:Key="DA_Tooltip_KeepStandard">Si está marcado, las cartas legales en Standard se omiten (puede que las quieras jugar). Solo aplica en SafeOnly / SafeOnlyUnused.</sys:String>
+  <sys:String x:Key="DA_Label_TargetDust">Dust objetivo:</sys:String>
+  <sys:String x:Key="DA_Tooltip_TargetDust">Ingresa un objetivo de dust. El plan se optimiza para alcanzarlo con el mínimo de cartas. Vacío = mostrar todo.</sys:String>
+  <sys:String x:Key="DA_Tooltip_WastedDust">Dust adicional que obtendrías cambiando a la estrategia MaxDust (dustea Doradas primero, pierdes los cosméticos).</sys:String>
+  <sys:String x:Key="DA_Tooltip_Help">¿Cómo funciona Dust Advisor?</sys:String>
+
+  <!-- Filter row -->
+  <sys:String x:Key="DA_Label_Format">Formato:</sys:String>
+  <sys:String x:Key="DA_Tooltip_Format">Filtra por legalidad: All / Standard (legal hoy) / Wild (rotada).</sys:String>
+  <sys:String x:Key="DA_Label_Rarity">Rareza:</sys:String>
+  <sys:String x:Key="DA_Tooltip_Rarity">Mostrar/ocultar cartas por rareza.</sys:String>
+  <sys:String x:Key="DA_Rarity_Common">Común</sys:String>
+  <sys:String x:Key="DA_Rarity_Rare">Rara</sys:String>
+  <sys:String x:Key="DA_Rarity_Epic">Épica</sys:String>
+  <sys:String x:Key="DA_Rarity_Legendary">Legendaria</sys:String>
+  <sys:String x:Key="DA_Label_Premium">Acabado:</sys:String>
+  <sys:String x:Key="DA_Tooltip_Premium">Qué acabados mostrar: Normal (no dorada) y/o Dorada. Diamond/Signature son cosméticos no desencantables — nunca aparecen aquí.</sys:String>
+  <sys:String x:Key="DA_Premium_Normal">Normal</sys:String>
+  <sys:String x:Key="DA_Tooltip_PremiumNormal">Mostrar cartas que recomiendan dustear copias Normales (Regular).</sys:String>
+  <sys:String x:Key="DA_Premium_Golden">Dorada</sys:String>
+  <sys:String x:Key="DA_Tooltip_PremiumGolden">Mostrar cartas que recomiendan dustear copias Doradas. Off por defecto: las Doradas son tu mejor versión jugable.</sys:String>
+  <sys:String x:Key="DA_Label_AutoAdvance">Auto-avance</sys:String>
+  <sys:String x:Key="DA_Tooltip_AutoAdvance">Al marcar el checkbox de una carta, salta automáticamente a la siguiente fila tras un breve momento. Útil para procesar muchas cartas rápido.</sys:String>
+  <sys:String x:Key="DA_Label_Search">Buscar:</sys:String>
+  <sys:String x:Key="DA_Tooltip_Search">Filtra por nombre de carta (en el idioma de tu cliente Hearthstone).</sys:String>
+
+  <!-- Class row -->
+  <sys:String x:Key="DA_Label_Class">Clase:</sys:String>
+  <sys:String x:Key="DA_Class_Druid">Druida</sys:String>
+  <sys:String x:Key="DA_Class_Hunter">Cazador</sys:String>
+  <sys:String x:Key="DA_Class_Mage">Mago</sys:String>
+  <sys:String x:Key="DA_Class_Paladin">Paladín</sys:String>
+  <sys:String x:Key="DA_Class_Priest">Sacerdote</sys:String>
+  <sys:String x:Key="DA_Class_Rogue">Pícaro</sys:String>
+  <sys:String x:Key="DA_Class_Shaman">Chamán</sys:String>
+  <sys:String x:Key="DA_Class_Warlock">Brujo</sys:String>
+  <sys:String x:Key="DA_Class_Warrior">Guerrero</sys:String>
+  <sys:String x:Key="DA_Class_Dh">CD</sys:String>
+  <sys:String x:Key="DA_Class_Dk">CM</sys:String>
+  <sys:String x:Key="DA_Class_Neutral">Neutral</sys:String>
+
+  <!-- DataGrid columns and column tooltips -->
+  <sys:String x:Key="DA_Tooltip_CheckboxColumn">Marca las cartas que vas a desencantar. Aparecerá una barra de confirmación abajo.</sys:String>
+  <sys:String x:Key="DA_Column_Card">Carta</sys:String>
+  <sys:String x:Key="DA_Tooltip_CardColumn">Nombre de la carta en el idioma de tu cliente Hearthstone.</sys:String>
+  <sys:String x:Key="DA_Column_Rarity">Rareza</sys:String>
+  <sys:String x:Key="DA_Tooltip_RarityColumn">Rareza de la carta: Común (5/50 dust), Rara (20/100), Épica (100/400), Legendaria (400/1600). Regular / Dorada.</sys:String>
+  <sys:String x:Key="DA_Column_Owned">Tengo</sys:String>
+  <sys:String x:Key="DA_Tooltip_OwnedColumn">Copias que posees por tipo: R=Regular, G=Dorada, D=Diamond, S=Signature. Hover sobre la celda muestra el cálculo paso a paso.</sys:String>
+  <sys:String x:Key="DA_Column_DustReg">Dust Reg</sys:String>
+  <sys:String x:Key="DA_Tooltip_DustRegColumn">Cuántas copias Regulares (Normal) recomienda el plan que dustees de esta carta.</sys:String>
+  <sys:String x:Key="DA_Column_DustGold">Dust Oro</sys:String>
+  <sys:String x:Key="DA_Tooltip_DustGoldColumn">Cuántas copias Doradas recomienda el plan que dustees. Cero por defecto en SafeOnly (las Doradas son tu mejor versión jugable).</sys:String>
+  <sys:String x:Key="DA_Column_Dust">Dust</sys:String>
+  <sys:String x:Key="DA_Tooltip_DustColumn">Total de dust que ganarías al dustear las copias recomendadas. Si la carta está en REFUND, este valor es el costo de craft completo recuperable.</sys:String>
+  <sys:String x:Key="DA_Column_Tier">Tier</sys:String>
+  <sys:String x:Key="DA_Tooltip_TierColumn">Clasificación curada de meta: S/A/B/C. '?' = sin clasificar. Lo mantienes a mano en data/meta_tiers.json (fuentes: Vicious Syndicate, HSReplay, etc.).</sys:String>
+  <sys:String x:Key="DA_Column_Wr">WR%</sys:String>
+  <sys:String x:Key="DA_Tooltip_WrColumn">Tu porcentaje de victorias personal (de HDT) cuando esta carta está en el mazo jugado. Mínimo 20 partidas — vacío si menos.</sys:String>
+  <sys:String x:Key="DA_Column_InDecks">En mazos</sys:String>
+  <sys:String x:Key="DA_Tooltip_InDecksColumn">En cuántos de tus mazos activos de HDT está esta carta (excluye Arena y archivados).</sys:String>
+  <sys:String x:Key="DA_Column_Flag">Etiqueta</sys:String>
+  <sys:String x:Key="DA_Tooltip_FlagColumn" xml:space="preserve">Etiqueta de prioridad / contexto:&#x0a;• IN-DECK — usada en tus mazos&#x0a;• REFUND — en ventana de refund post-nerf&#x0a;• STANDARD — legal en Standard hoy&#x0a;• WILD — rotada fuera de Standard</sys:String>
+
+  <!-- Confirm bar -->
+  <sys:String x:Key="DA_Button_Confirm">Confirmar</sys:String>
+  <sys:String x:Key="DA_Tooltip_Confirm">Registra el lote actual en la sesión (footer 'Session: X batches').</sys:String>
+  <sys:String x:Key="DA_Button_Clear">Limpiar</sys:String>
+  <sys:String x:Key="DA_Tooltip_Clear">Desmarca todas las cartas seleccionadas sin registrar.</sys:String>
+  <sys:String x:Key="DA_ConfirmBar_Note">(el plugin no desencanta por ti — debes hacerlo manualmente en el juego)</sys:String>
+
+  <!-- Export -->
+  <sys:String x:Key="DA_Button_ExportCsv">Exportar CSV</sys:String>
+  <sys:String x:Key="DA_Tooltip_ExportCsv">Exporta el plan visible actual a un archivo CSV (compatible con Excel/Google Sheets).</sys:String>
+  <sys:String x:Key="DA_Button_ExportJson">Exportar JSON</sys:String>
+  <sys:String x:Key="DA_Tooltip_ExportJson">Exporta el plan visible actual a JSON estructurado para procesar con scripts.</sys:String>
+
+  <!-- ContextMenu -->
+  <sys:String x:Key="DA_Menu_OpenInBrowser">Abrir en HearthstoneJSON</sys:String>
+  <sys:String x:Key="DA_Menu_NeverRegular">Nunca sugerir (Regular)</sys:String>
+  <sys:String x:Key="DA_Menu_NeverGolden">Nunca sugerir (Dorada)</sys:String>
+  <sys:String x:Key="DA_Menu_NeverAny">Nunca sugerir (cualquier acabado)</sys:String>
+
+  <!-- Toasts and dynamic strings -->
+  <sys:String x:Key="DA_TotalDust_Filtered_Fmt">{0} dust  (de {1} sin filtrar)</sys:String>
+  <sys:String x:Key="DA_TotalDust_Fmt">{0} dust</sys:String>
+  <sys:String x:Key="DA_Warning_Count_Fmt">{0} advertencia(s)</sys:String>
+  <sys:String x:Key="DA_TargetStatus_Met_Fmt">{0} / {1} objetivo ({2} cartas)</sys:String>
+  <sys:String x:Key="DA_TargetStatus_NotMet_Fmt">{0} / {1} objetivo — no hay suficiente dust seguro</sys:String>
+  <sys:String x:Key="DA_StatusFooter_Fmt">Sesión: {0} lotes → {1} dust   |   Visibles: {2} de {3} filas del plan</sys:String>
+  <sys:String x:Key="DA_Confirm_Selected_Fmt">{0} cartas seleccionadas = {1} dust</sys:String>
+  <sys:String x:Key="DA_Undo_Marked_Fmt">marcadas {0} cartas</sys:String>
+  <sys:String x:Key="DA_Toast_Marked_Fmt">Marcadas {0} cartas para desencantar ({1} dust)</sys:String>
+  <sys:String x:Key="DA_Toast_NeverSuggest_Fmt">Nunca sugerir: {0}</sys:String>
+  <sys:String x:Key="DA_Toast_Restored_Fmt">Restaurada: {0}</sys:String>
+  <sys:String x:Key="DA_WastedDust_Fmt">+{0} dust disponibles si cambias a MaxDust</sys:String>
+  <sys:String x:Key="DA_Toast_Undid_Fmt">Deshecho: {0}</sys:String>
+  <sys:String x:Key="DA_Toast_Redid_Fmt">Rehecho: {0}</sys:String>
+
+  <!-- Plugin.cs error messages -->
+  <sys:String x:Key="DA_Error_NoCollection_Caption">Dust Advisor: sin datos de colección</sys:String>
+  <sys:String x:Key="DA_Error_Generic_Caption">Dust Advisor: error</sys:String>
+  <sys:String x:Key="DA_Error_NoCollection_Body" xml:space="preserve">No se pudo leer la colección desde Hearthstone.
+
+Asegúrate de que:
+  1. Hearthstone esté corriendo y hayas iniciado sesión.
+  2. Hayas abierto la pantalla de Colección dentro del juego al menos una vez en esta sesión.
+  3. HDT muestre el juego como conectado (esquina inferior izquierda de la ventana principal de HDT).
+
+Si el log de HDT en %APPDATA%\HearthstoneDeckTracker\Logs\ muestra errores ScryMemoryAccessException, HearthMirror no puede leer el proceso de Hearthstone. Prueba: cierra HDT y Hearthstone, abre HDT primero, luego Hearthstone, espera en el menú principal, abre Mi Colección y reintenta.</sys:String>
+  <sys:String x:Key="DA_Warning_MissingMeta_Fmt">{0} cartas en tu colección aún no tienen metadatos (añadidas recientemente; no están en la caché de HearthstoneJSON).</sys:String>
+
+  <!-- ============ HelpWindow ============ -->
+  <sys:String x:Key="DA_Help_Title">Cómo funciona Dust Advisor</sys:String>
+  <sys:String x:Key="DA_Help_Subtitle">Tu colección viva, contrastada contra HearthstoneJSON. Te dice qué cartas son seguras de desencantar.</sys:String>
+  <sys:String x:Key="DA_Help_Close">Cerrar</sys:String>
+
+  <sys:String x:Key="DA_Help_H_What">Qué hace</sys:String>
+  <sys:String x:Key="DA_Help_What_Body">Lee tu colección viva desde Hearthstone (vía HDT), descarga metadatos de cartas desde HearthstoneJSON, y genera un plan de cartas que son seguras de desencantar — manteniendo siempre tu playset jugable y excluyendo cartas que el juego no te permite convertir en polvo.</sys:String>
+  <sys:String x:Key="DA_Help_What_Note">El plugin NUNCA toca el juego. Solo te recomienda; tú debes desencantar manualmente en Hearthstone.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Reads">Cómo lee tu colección</sys:String>
+  <sys:String x:Key="DA_Help_Reads_Body">Usa HearthMirror (vía HDT) para leer la memoria del proceso de Hearthstone. Por cada carta obtiene 4 contadores: Regular, Dorada, Diamante, Firma. Las copias de prueba/préstamo (eventos) NO se cuentan como propias. Diamond y Signature son cosméticas — cubren ranuras de playset pero no se pueden desencantar.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Decides">Cómo decide qué dustear</sys:String>
+  <sys:String x:Key="DA_Help_Decides_Body_Pre">Para cada carta calcula el playset jugable (1 para Legendarias, 2 para el resto). Cosméticas (Diamond/Signature) cuentan hacia el playset. El plugin escoge qué copias mantener según la </sys:String>
+  <sys:String x:Key="DA_Help_Decides_Strategy">Strategy</sys:String>
+  <sys:String x:Key="DA_Help_Decides_Body_Post"> y dustea el resto. El total de dust se calcula con valores oficiales:</sys:String>
+  <sys:String x:Key="DA_Help_Decides_Bullet_Common">Común: 5 / 50 dust (Regular / Dorada)</sys:String>
+  <sys:String x:Key="DA_Help_Decides_Bullet_Rare">Rara: 20 / 100</sys:String>
+  <sys:String x:Key="DA_Help_Decides_Bullet_Epic">Épica: 100 / 400</sys:String>
+  <sys:String x:Key="DA_Help_Decides_Bullet_Legendary">Legendaria: 400 / 1600</sys:String>
+  <sys:String x:Key="DA_Help_Decides_Refund">Si una carta está en la ventana de refund (cambio reciente de balance, 14 días), la columna Dust usa el costo de craft completo en vez del valor de desencanto.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Strategies">Estrategias</sys:String>
+  <sys:String x:Key="DA_Help_Strat_SafeOnly_Name">SafeOnly</sys:String>
+  <sys:String x:Key="DA_Help_Strat_SafeOnly_Desc"> — recomienda dustear solo extras. Mantiene tu playset. Por defecto omite cartas Standard-legal (puede que las quieras jugar).</sys:String>
+  <sys:String x:Key="DA_Help_Strat_SafeOnlyUnused_Name">SafeOnlyUnused</sys:String>
+  <sys:String x:Key="DA_Help_Strat_SafeOnlyUnused_Desc"> — como SafeOnly, pero además omite cartas que YA están en algún mazo tuyo activo (HDT).</sys:String>
+  <sys:String x:Key="DA_Help_Strat_RotationImminent_Name">RotationImminent</sys:String>
+  <sys:String x:Key="DA_Help_Strat_RotationImminent_Desc"> — solo muestra cartas de los sets que rotarán a Wild en el próximo cambio anual. Útil entre Enero–Marzo cuando se conoce la rotación.</sys:String>
+  <sys:String x:Key="DA_Help_Strat_MaxDust_Name">MaxDust</sys:String>
+  <sys:String x:Key="DA_Help_Strat_MaxDust_Desc"> — invierte la preferencia: dustea Doradas primero y mantiene Regulares como copia jugable. Genera más dust pero pierdes los cosméticos.</sys:String>
+  <sys:String x:Key="DA_Help_Strat_RefundOnly_Name">RefundOnly</sys:String>
+  <sys:String x:Key="DA_Help_Strat_RefundOnly_Desc"> — solo cartas en ventana de refund (post-nerf, 14 días).</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Flags">Etiquetas (columna Flag)</sys:String>
+  <sys:String x:Key="DA_Help_Flag_InDeck_Name">IN-DECK</sys:String>
+  <sys:String x:Key="DA_Help_Flag_InDeck_Desc"> — usada en uno o más de tus mazos activos. SafeOnlyUnused la omite.</sys:String>
+  <sys:String x:Key="DA_Help_Flag_Refund_Name">REFUND</sys:String>
+  <sys:String x:Key="DA_Help_Flag_Refund_Desc"> — en ventana de refund: el dust mostrado es el costo de craft completo, recuperable. Prioridad alta.</sys:String>
+  <sys:String x:Key="DA_Help_Flag_Standard_Name">STANDARD</sys:String>
+  <sys:String x:Key="DA_Help_Flag_Standard_Desc"> — legal en formato Standard actual. Puede ser útil; SafeOnly la omite por defecto.</sys:String>
+  <sys:String x:Key="DA_Help_Flag_Wild_Name">WILD</sys:String>
+  <sys:String x:Key="DA_Help_Flag_Wild_Desc"> — rotó fuera de Standard. Bajo costo de oportunidad.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Uncraftable">Cartas que el juego NO deja desencantar</sys:String>
+  <sys:String x:Key="DA_Help_Uncraftable_Body">Detectadas automáticamente vía heurística sobre el campo 'howToEarn' de HearthstoneJSON. Incluye: legendarias gratuitas de Catch-Up Pack (ej. Colifero el Artista), recompensas de Reward Track, achievements, BlizzCon goldens, cartas básicas de clase, recompensas de tutorial, pase de taberna, packs de promoción. Total: ~777 cartas (verificado contra el catálogo completo).</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Owned">Columna 'Tengo'</sys:String>
+  <sys:String x:Key="DA_Help_Owned_Body_Pre">Formato compacto: </sys:String>
+  <sys:String x:Key="DA_Help_Owned_Body_Example">2R+1G+0D+1S</sys:String>
+  <sys:String x:Key="DA_Help_Owned_Body_Post"> = 2 Regular + 1 Dorada + 0 Diamond + 1 Signature. Hover sobre la celda muestra el cálculo paso a paso.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_TierWr">Tier y WR%</sys:String>
+  <sys:String x:Key="DA_Help_Tier_Label">Tier</sys:String>
+  <sys:String x:Key="DA_Help_Tier_Body_Pre"> — clasificación curada (S/A/B/C). El archivo </sys:String>
+  <sys:String x:Key="DA_Help_Tier_Body_File">data/meta_tiers.json</sys:String>
+  <sys:String x:Key="DA_Help_Tier_Body_Post"> lo mantienes tú a mano (de fuentes como Vicious Syndicate, HSReplay). '?' = sin clasificar.</sys:String>
+  <sys:String x:Key="DA_Help_Wr_Label">WR%</sys:String>
+  <sys:String x:Key="DA_Help_Wr_Body"> — porcentaje de victorias en tus partidas (de HDT) cuando esta carta estaba en el mazo. Mínimo 20 partidas; en blanco si menos.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Cart">Carrito de confirmación</sys:String>
+  <sys:String x:Key="DA_Help_Cart_Body">Marca el checkbox de cada carta que pienses desencantar. Aparece una barra inferior con el total acumulado. Confirma para añadir al historial de sesión. El plugin no desencanta por ti — debes hacerlo manualmente en Hearthstone.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Shortcuts">Atajos del DataGrid</sys:String>
+  <sys:String x:Key="DA_Help_Shortcut_DoubleClick">Doble-clic en una fila → abre la vista detalle con la imagen completa de la carta.</sys:String>
+  <sys:String x:Key="DA_Help_Shortcut_Hover">Hover sobre una fila → muestra la imagen como tooltip.</sys:String>
+  <sys:String x:Key="DA_Help_Shortcut_RightClick">Clic derecho → menú: añadir a 'Never suggest' (no volver a sugerir esta carta).</sys:String>
+  <sys:String x:Key="DA_Help_Shortcut_AutoAdvance">Marcar checkbox + Auto-avance ON → selecciona la siguiente fila automáticamente.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Limitations">Limitaciones conocidas</sys:String>
+  <sys:String x:Key="DA_Help_Limitation_Windows">Solo Windows. Requiere HDT corriendo y Hearthstone abierto en la pantalla de Colección al menos una vez por sesión.</sys:String>
+  <sys:String x:Key="DA_Help_Limitation_NoAuto">El plugin NO desencanta por ti — es una recomendación informativa.</sys:String>
+  <sys:String x:Key="DA_Help_Limitation_NewPatterns">Si Blizzard agrega un patrón nuevo de carta uncraftable en una expansión futura, hay que actualizar la heurística manualmente.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Sources">Fuentes de datos</sys:String>
+  <sys:String x:Key="DA_Help_Source_Hsj_Pre"></sys:String>
+  <sys:String x:Key="DA_Help_Source_Hsj_Code">api.hearthstonejson.com</sys:String>
+  <sys:String x:Key="DA_Help_Source_Hsj_Post"> — catálogo de cartas, set, rareza, howToEarn (en-US para heurística, locale para nombres).</sys:String>
+  <sys:String x:Key="DA_Help_Source_HearthMirror">HearthMirror (vía HDT) — colección viva del usuario actualmente logueado.</sys:String>
+  <sys:String x:Key="DA_Help_Source_DeckList_Pre">HDT </sys:String>
+  <sys:String x:Key="DA_Help_Source_DeckList_Code">DeckList</sys:String>
+  <sys:String x:Key="DA_Help_Source_DeckList_Post"> — mazos activos para detectar IN-DECK.</sys:String>
+  <sys:String x:Key="DA_Help_Source_DeckStats_Pre">HDT </sys:String>
+  <sys:String x:Key="DA_Help_Source_DeckStats_Code">DeckStatsList</sys:String>
+  <sys:String x:Key="DA_Help_Source_DeckStats_Post"> — historial de partidas para calcular WR% personal.</sys:String>
+
+</ResourceDictionary>
