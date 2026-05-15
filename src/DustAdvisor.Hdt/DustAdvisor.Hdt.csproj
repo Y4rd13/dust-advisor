@@ -9,8 +9,14 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- Override at command line: dotnet build /p:HdtAppDir=C:\Users\dharm\AppData\Local\HearthstoneDeckTracker\app-1.52.7 -->
+    <!--
+      Resolve HDT reference assemblies. Order of precedence:
+        1. Caller-supplied $(HdtAppDir) (e.g. dotnet build /p:HdtAppDir=...).
+        2. Local HDT install under %LOCALAPPDATA% (default for devs running HDT).
+        3. Vendored copy in lib/hdt/ — used by CI and contributors without HDT.
+    -->
     <HdtAppDir Condition="'$(HdtAppDir)'==''">$(LOCALAPPDATA)\HearthstoneDeckTracker\app-1.52.6</HdtAppDir>
+    <HdtAppDir Condition="!Exists('$(HdtAppDir)\HearthstoneDeckTracker.exe')">$(MSBuildThisFileDirectory)..\..\lib\hdt</HdtAppDir>
   </PropertyGroup>
 
   <ItemGroup>
