@@ -36,3 +36,7 @@ release/
 node_modules/
 package-lock.json
 package.json
+
+# Internal planning / spec docs — kept locally, never tracked
+docs/plans/
+docs/specs/
