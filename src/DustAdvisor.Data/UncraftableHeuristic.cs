@@ -11,6 +11,11 @@ namespace DustAdvisor.Data
     /// the Group Learning new-player experience).
     public static class UncraftableHeuristic
     {
+        // Substrings (case-insensitive) on HearthstoneJSON's howToEarn/howToEarnGolden that
+        // mark a (cardId, premium) copy as uncraftable. Verified against the full
+        // cards.collectible.json — patterns chosen to NOT match adventure unlocks
+        // ("Unlocked in X, in the Y adventure" or "Unlocked by starting the Z adventure"),
+        // which ARE craftable/disenchantable after unlock.
         private static readonly string[] UncraftablePhrases =
         {
             "tavern pass",
@@ -24,6 +29,21 @@ namespace DustAdvisor.Data
             "bundle",
             "group learning",
             "trial",
+            "earnable",
+            "catch-up",
+            "catch up pack",
+            "free reward",
+            "pre-purchase",
+            "prepurchase",
+            "preorder",
+            "pre-order",
+            "unlocked with ",
+            "unlocked when ",
+            "unlocked by completing ",
+            "unlocked by opening ",
+            "unlocked after completing ",
+            "blizzcon",
+            "virtual ticket",
         };
 
         public static bool LooksUncraftable(string howToEarnText)

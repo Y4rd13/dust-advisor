@@ -34,7 +34,11 @@ namespace DustAdvisor.Data
 
         public async Task<IReadOnlyCollection<(string CardId, Premium Premium)>> LoadHeuristicUncraftableAsync(string locale, CancellationToken ct)
         {
-            var dtos = await FetchDtosAsync(locale, ct).ConfigureAwait(false);
+            // UncraftablePhrases are English-only — matching them against a localized
+            // cards.collectible.json (e.g. esES translates "Earnable" → "Se puede conseguir")
+            // produces zero hits. Always fetch enUS for the heuristic. The `locale`
+            // parameter is ignored; kept for interface compatibility.
+            var dtos = await FetchDtosAsync("enUS", ct).ConfigureAwait(false);
             var set = new HashSet<(string, Premium)>();
             foreach (var d in dtos)
             {
