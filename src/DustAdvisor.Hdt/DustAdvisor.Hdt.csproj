@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>DustAdvisor</AssemblyName>
+    <RootNamespace>DustAdvisor.Hdt</RootNamespace>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!--
+      Resolve HDT reference assemblies. Order of precedence:
+        1. Caller-supplied $(HdtAppDir) (e.g. dotnet build /p:HdtAppDir=...).
+        2. Local HDT install under %LOCALAPPDATA% (default for devs running HDT).
+        3. Vendored copy in lib/hdt/ — used by CI and contributors without HDT.
+    -->
+    <HdtAppDir Condition="'$(HdtAppDir)'==''">$(LOCALAPPDATA)\HearthstoneDeckTracker\app-1.52.6</HdtAppDir>
+    <HdtAppDir Condition="!Exists('$(HdtAppDir)\HearthstoneDeckTracker.exe')">$(MSBuildThisFileDirectory)..\..\lib\hdt</HdtAppDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="HearthstoneDeckTracker">
+      <HintPath>$(HdtAppDir)\HearthstoneDeckTracker.exe</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="HearthMirror">
+      <HintPath>$(HdtAppDir)\HearthMirror.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DustAdvisor.Algorithm\DustAdvisor.Algorithm.csproj" />
+    <ProjectReference Include="..\DustAdvisor.Data\DustAdvisor.Data.csproj" />
+    <ProjectReference Include="..\DustAdvisor.Ui\DustAdvisor.Ui.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Net.Http"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DustAdvisor.Algorithm\DustAdvisor.Algorithm.csproj" />
+    <ProjectReference Include="..\DustAdvisor.Data\DustAdvisor.Data.csproj" />
+    <ProjectReference Include="..\DustAdvisor.Ui.Export\DustAdvisor.Ui.Export.csproj" />
+  </ItemGroup>
+</Project>

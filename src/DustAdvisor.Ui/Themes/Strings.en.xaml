@@ -1,0 +1,227 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+  <!-- Window titles (format strings: {0}=cards read, {1}=missing metadata) -->
+  <sys:String x:Key="DA_Title_Fmt">Dust Advisor — {0} cards read</sys:String>
+  <sys:String x:Key="DA_Title_WithMissing_Fmt">Dust Advisor — {0} cards read ({1} missing metadata)</sys:String>
+
+  <!-- Header bar -->
+  <sys:String x:Key="DA_Tooltip_TotalDust">Total dust you would gain by disenchanting ALL visible cards under the current plan.</sys:String>
+  <sys:String x:Key="DA_Tooltip_WarningCount">Number of cards flagged with a warning (typically Standard-legal cards skipped by SafeOnly).</sys:String>
+  <sys:String x:Key="DA_Label_Strategy">Strategy:</sys:String>
+  <sys:String x:Key="DA_Tooltip_Strategy" xml:space="preserve">How the plan picks copies to dust:&#x0a;• SafeOnly — extras only, keep your playable playset&#x0a;• SafeOnlyUnused — also skip cards in your active decks&#x0a;• RotationImminent — only cards rotating to Wild next year&#x0a;• MaxDust — maximize dust (dust Goldens first)&#x0a;• RefundOnly — only cards in the post-nerf refund window</sys:String>
+  <sys:String x:Key="DA_Label_KeepStandard">Keep Standard-legal</sys:String>
+  <sys:String x:Key="DA_Tooltip_KeepStandard">When checked, cards legal in Standard are skipped (you may still want to play them). Only applies to SafeOnly / SafeOnlyUnused.</sys:String>
+  <sys:String x:Key="DA_Label_TargetDust">Target dust:</sys:String>
+  <sys:String x:Key="DA_Tooltip_TargetDust">Enter a dust target. The plan optimizes to reach it with the fewest cards. Leave blank to show everything.</sys:String>
+  <sys:String x:Key="DA_Tooltip_WastedDust">Extra dust you would get by switching to MaxDust (which dusts Goldens first; you lose those cosmetics).</sys:String>
+  <sys:String x:Key="DA_Tooltip_Help">How does Dust Advisor work?</sys:String>
+
+  <!-- Filter row -->
+  <sys:String x:Key="DA_Label_Format">Format:</sys:String>
+  <sys:String x:Key="DA_Tooltip_Format">Filter by legality: All / Standard (legal today) / Wild (rotated).</sys:String>
+  <sys:String x:Key="DA_Label_Rarity">Rarity:</sys:String>
+  <sys:String x:Key="DA_Tooltip_Rarity">Show/hide cards by rarity.</sys:String>
+  <sys:String x:Key="DA_Rarity_Common">Common</sys:String>
+  <sys:String x:Key="DA_Rarity_Rare">Rare</sys:String>
+  <sys:String x:Key="DA_Rarity_Epic">Epic</sys:String>
+  <sys:String x:Key="DA_Rarity_Legendary">Legendary</sys:String>
+  <sys:String x:Key="DA_Label_Premium">Premium:</sys:String>
+  <sys:String x:Key="DA_Tooltip_Premium">Which premium tiers to show: Normal (non-gold) and/or Gold. Diamond/Signature are uncraftable cosmetics — they never appear here.</sys:String>
+  <sys:String x:Key="DA_Premium_Normal">Normal</sys:String>
+  <sys:String x:Key="DA_Tooltip_PremiumNormal">Show cards where the plan recommends dusting Normal (Regular) copies.</sys:String>
+  <sys:String x:Key="DA_Premium_Golden">Golden</sys:String>
+  <sys:String x:Key="DA_Tooltip_PremiumGolden">Show cards where the plan recommends dusting Golden copies. Off by default — Goldens are your best playable copy.</sys:String>
+  <sys:String x:Key="DA_Label_AutoAdvance">Auto-advance</sys:String>
+  <sys:String x:Key="DA_Tooltip_AutoAdvance">When you tick a card's checkbox, automatically jump to the next row after a brief moment. Useful for processing many cards quickly.</sys:String>
+  <sys:String x:Key="DA_Label_Search">Search:</sys:String>
+  <sys:String x:Key="DA_Tooltip_Search">Filter by card name (in your Hearthstone client's language).</sys:String>
+
+  <!-- Class row -->
+  <sys:String x:Key="DA_Label_Class">Class:</sys:String>
+  <sys:String x:Key="DA_Class_Druid">Druid</sys:String>
+  <sys:String x:Key="DA_Class_Hunter">Hunter</sys:String>
+  <sys:String x:Key="DA_Class_Mage">Mage</sys:String>
+  <sys:String x:Key="DA_Class_Paladin">Paladin</sys:String>
+  <sys:String x:Key="DA_Class_Priest">Priest</sys:String>
+  <sys:String x:Key="DA_Class_Rogue">Rogue</sys:String>
+  <sys:String x:Key="DA_Class_Shaman">Shaman</sys:String>
+  <sys:String x:Key="DA_Class_Warlock">Warlock</sys:String>
+  <sys:String x:Key="DA_Class_Warrior">Warrior</sys:String>
+  <sys:String x:Key="DA_Class_Dh">DH</sys:String>
+  <sys:String x:Key="DA_Class_Dk">DK</sys:String>
+  <sys:String x:Key="DA_Class_Neutral">Neutral</sys:String>
+
+  <!-- DataGrid columns and column tooltips -->
+  <sys:String x:Key="DA_Tooltip_CheckboxColumn">Tick cards you plan to disenchant. A confirmation bar will appear at the bottom.</sys:String>
+  <sys:String x:Key="DA_Column_Card">Card</sys:String>
+  <sys:String x:Key="DA_Tooltip_CardColumn">Card name in your Hearthstone client's language.</sys:String>
+  <sys:String x:Key="DA_Column_Rarity">Rarity</sys:String>
+  <sys:String x:Key="DA_Tooltip_RarityColumn">Card rarity: Common (5/50 dust), Rare (20/100), Epic (100/400), Legendary (400/1600). Regular / Golden.</sys:String>
+  <sys:String x:Key="DA_Column_Owned">Owned</sys:String>
+  <sys:String x:Key="DA_Tooltip_OwnedColumn">Copies you own per tier: R=Regular, G=Golden, D=Diamond, S=Signature. Hover the cell to see the step-by-step calculation.</sys:String>
+  <sys:String x:Key="DA_Column_DustReg">Dust Reg</sys:String>
+  <sys:String x:Key="DA_Tooltip_DustRegColumn">How many Regular (Normal) copies the plan recommends you dust of this card.</sys:String>
+  <sys:String x:Key="DA_Column_DustGold">Dust Gold</sys:String>
+  <sys:String x:Key="DA_Tooltip_DustGoldColumn">How many Golden copies the plan recommends dusting. Zero by default in SafeOnly (Goldens are your best playable copy).</sys:String>
+  <sys:String x:Key="DA_Column_Dust">Dust</sys:String>
+  <sys:String x:Key="DA_Tooltip_DustColumn">Total dust gained by dusting the recommended copies. If the card is flagged REFUND, this is the full recoverable craft cost.</sys:String>
+  <sys:String x:Key="DA_Column_Tier">Tier</sys:String>
+  <sys:String x:Key="DA_Tooltip_TierColumn">Curated meta tier: S/A/B/C. '?' = unclassified. You maintain it manually in data/meta_tiers.json (sources like Vicious Syndicate, HSReplay, etc.).</sys:String>
+  <sys:String x:Key="DA_Column_Wr">WR%</sys:String>
+  <sys:String x:Key="DA_Tooltip_WrColumn">Your personal win-rate (from HDT) when this card was in the deck. Minimum 20 games — blank if fewer.</sys:String>
+  <sys:String x:Key="DA_Column_InDecks">In Decks</sys:String>
+  <sys:String x:Key="DA_Tooltip_InDecksColumn">How many of your active HDT decks contain this card (excludes Arena and archived).</sys:String>
+  <sys:String x:Key="DA_Column_Flag">Flag</sys:String>
+  <sys:String x:Key="DA_Tooltip_FlagColumn" xml:space="preserve">Priority / context tag:&#x0a;• IN-DECK — in one of your decks&#x0a;• REFUND — in the post-nerf refund window&#x0a;• STANDARD — legal in Standard today&#x0a;• WILD — rotated out of Standard</sys:String>
+
+  <!-- Confirm bar -->
+  <sys:String x:Key="DA_Button_Confirm">Confirm</sys:String>
+  <sys:String x:Key="DA_Tooltip_Confirm">Record the current batch in the session ledger (footer 'Session: X batches').</sys:String>
+  <sys:String x:Key="DA_Button_Clear">Clear</sys:String>
+  <sys:String x:Key="DA_Tooltip_Clear">Unselect all checked cards without recording.</sys:String>
+  <sys:String x:Key="DA_ConfirmBar_Note">(plugin doesn't dust for you — disenchant in-game manually)</sys:String>
+
+  <!-- Export -->
+  <sys:String x:Key="DA_Button_ExportCsv">Export CSV</sys:String>
+  <sys:String x:Key="DA_Tooltip_ExportCsv">Export the currently visible plan to a CSV file (Excel / Google Sheets compatible).</sys:String>
+  <sys:String x:Key="DA_Button_ExportJson">Export JSON</sys:String>
+  <sys:String x:Key="DA_Tooltip_ExportJson">Export the currently visible plan to structured JSON for scripting.</sys:String>
+
+  <!-- ContextMenu -->
+  <sys:String x:Key="DA_Menu_OpenInBrowser">Open in HearthstoneJSON</sys:String>
+  <sys:String x:Key="DA_Menu_NeverRegular">Never suggest (Regular)</sys:String>
+  <sys:String x:Key="DA_Menu_NeverGolden">Never suggest (Golden)</sys:String>
+  <sys:String x:Key="DA_Menu_NeverAny">Never suggest (any premium)</sys:String>
+
+  <!-- Toasts and dynamic strings (format placeholders: see comments) -->
+  <!-- {0}=visible dust formatted, {1}=plan total formatted -->
+  <sys:String x:Key="DA_TotalDust_Filtered_Fmt">{0} dust  (of {1} unfiltered)</sys:String>
+  <!-- {0}=total dust formatted -->
+  <sys:String x:Key="DA_TotalDust_Fmt">{0} dust</sys:String>
+  <!-- {0}=warning count -->
+  <sys:String x:Key="DA_Warning_Count_Fmt">{0} warning(s)</sys:String>
+  <!-- {0}=achieved, {1}=target, {2}=card count -->
+  <sys:String x:Key="DA_TargetStatus_Met_Fmt">{0} / {1} target ({2} cards)</sys:String>
+  <!-- {0}=achieved, {1}=target -->
+  <sys:String x:Key="DA_TargetStatus_NotMet_Fmt">{0} / {1} target — not enough safe dust</sys:String>
+  <!-- {0}=batches, {1}=session dust, {2}=visible rows, {3}=plan rows -->
+  <sys:String x:Key="DA_StatusFooter_Fmt">Session: {0} batches → {1} dust   |   Visible: {2} of {3} plan rows</sys:String>
+  <!-- {0}=selected card count, {1}=selected dust -->
+  <sys:String x:Key="DA_Confirm_Selected_Fmt">{0} cards selected = {1} dust</sys:String>
+  <!-- {0}=card count -->
+  <sys:String x:Key="DA_Undo_Marked_Fmt">marked {0} cards</sys:String>
+  <!-- {0}=card count, {1}=dust -->
+  <sys:String x:Key="DA_Toast_Marked_Fmt">Marked {0} cards for disenchant ({1} dust)</sys:String>
+  <!-- {0}=cardId -->
+  <sys:String x:Key="DA_Toast_NeverSuggest_Fmt">Never suggest: {0}</sys:String>
+  <sys:String x:Key="DA_Toast_Restored_Fmt">Restored: {0}</sys:String>
+  <!-- {0}=delta dust -->
+  <sys:String x:Key="DA_WastedDust_Fmt">+{0} dust available if you switch to MaxDust</sys:String>
+  <!-- {0}=undo label -->
+  <sys:String x:Key="DA_Toast_Undid_Fmt">Undid: {0}</sys:String>
+  <sys:String x:Key="DA_Toast_Redid_Fmt">Redid: {0}</sys:String>
+
+  <!-- Plugin.cs error messages -->
+  <sys:String x:Key="DA_Error_NoCollection_Caption">Dust Advisor: no collection data</sys:String>
+  <sys:String x:Key="DA_Error_Generic_Caption">Dust Advisor: error</sys:String>
+  <sys:String x:Key="DA_Error_NoCollection_Body" xml:space="preserve">Could not read collection from Hearthstone.
+
+Make sure:
+  1. Hearthstone is running and you are logged in.
+  2. You opened the in-game Collection screen at least once this session.
+  3. HDT shows the game as connected (bottom-left of the main HDT window).
+
+If the HDT log at %APPDATA%\HearthstoneDeckTracker\Logs\ shows ScryMemoryAccessException errors, HearthMirror is failing to read the Hearthstone process. Try: close both HDT and Hearthstone, start HDT first, then start Hearthstone, wait at the main menu, open My Collection, then retry.</sys:String>
+  <!-- {0}=missing metadata count -->
+  <sys:String x:Key="DA_Warning_MissingMeta_Fmt">{0} cards in your collection have no metadata yet (recently added; not in HearthstoneJSON cache).</sys:String>
+
+  <!-- ============ HelpWindow ============ -->
+  <sys:String x:Key="DA_Help_Title">How Dust Advisor works</sys:String>
+  <sys:String x:Key="DA_Help_Subtitle">Your live collection, checked against HearthstoneJSON. Tells you which cards are safe to disenchant.</sys:String>
+  <sys:String x:Key="DA_Help_Close">Close</sys:String>
+
+  <sys:String x:Key="DA_Help_H_What">What it does</sys:String>
+  <sys:String x:Key="DA_Help_What_Body">Reads your live collection from Hearthstone (via HDT), downloads card metadata from HearthstoneJSON, and produces a plan of cards that are safe to disenchant — always keeping your playable playset and excluding cards the game won't let you dust.</sys:String>
+  <sys:String x:Key="DA_Help_What_Note">The plugin NEVER touches the game. It only recommends; you must disenchant manually in Hearthstone.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Reads">How it reads your collection</sys:String>
+  <sys:String x:Key="DA_Help_Reads_Body">It uses HearthMirror (via HDT) to read the Hearthstone process's memory. For each card it gets 4 counters: Regular, Golden, Diamond, Signature. Trial / loaned copies (events) are NOT counted as owned. Diamond and Signature are cosmetic — they fill a playset slot but cannot be disenchanted.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Decides">How it decides what to dust</sys:String>
+  <sys:String x:Key="DA_Help_Decides_Body_Pre">For each card it computes the playable playset (1 for Legendaries, 2 for the rest). Cosmetics (Diamond/Signature) count toward the playset. The plugin picks which copies to keep based on the </sys:String>
+  <sys:String x:Key="DA_Help_Decides_Strategy">Strategy</sys:String>
+  <sys:String x:Key="DA_Help_Decides_Body_Post"> and dusts the rest. Totals use the official disenchant values:</sys:String>
+  <sys:String x:Key="DA_Help_Decides_Bullet_Common">Common: 5 / 50 dust (Regular / Golden)</sys:String>
+  <sys:String x:Key="DA_Help_Decides_Bullet_Rare">Rare: 20 / 100</sys:String>
+  <sys:String x:Key="DA_Help_Decides_Bullet_Epic">Epic: 100 / 400</sys:String>
+  <sys:String x:Key="DA_Help_Decides_Bullet_Legendary">Legendary: 400 / 1600</sys:String>
+  <sys:String x:Key="DA_Help_Decides_Refund">If a card is in the refund window (recent balance change, 14 days), the Dust column uses the full craft cost instead of the disenchant value.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Strategies">Strategies</sys:String>
+  <sys:String x:Key="DA_Help_Strat_SafeOnly_Name">SafeOnly</sys:String>
+  <sys:String x:Key="DA_Help_Strat_SafeOnly_Desc"> — recommends dusting extras only. Keeps your playset. By default skips Standard-legal cards (you may want to play them).</sys:String>
+  <sys:String x:Key="DA_Help_Strat_SafeOnlyUnused_Name">SafeOnlyUnused</sys:String>
+  <sys:String x:Key="DA_Help_Strat_SafeOnlyUnused_Desc"> — like SafeOnly, but also skips cards that are ALREADY in one of your active decks (HDT).</sys:String>
+  <sys:String x:Key="DA_Help_Strat_RotationImminent_Name">RotationImminent</sys:String>
+  <sys:String x:Key="DA_Help_Strat_RotationImminent_Desc"> — only shows cards from sets rotating to Wild at the next annual change. Useful Jan–Mar when the rotation is known.</sys:String>
+  <sys:String x:Key="DA_Help_Strat_MaxDust_Name">MaxDust</sys:String>
+  <sys:String x:Key="DA_Help_Strat_MaxDust_Desc"> — inverts the preference: dusts Goldens first and keeps Regulars as the playable copy. Yields more dust but you lose the cosmetics.</sys:String>
+  <sys:String x:Key="DA_Help_Strat_RefundOnly_Name">RefundOnly</sys:String>
+  <sys:String x:Key="DA_Help_Strat_RefundOnly_Desc"> — only cards in the refund window (post-nerf, 14 days).</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Flags">Flags (Flag column)</sys:String>
+  <sys:String x:Key="DA_Help_Flag_InDeck_Name">IN-DECK</sys:String>
+  <sys:String x:Key="DA_Help_Flag_InDeck_Desc"> — used in one or more of your active decks. SafeOnlyUnused skips it.</sys:String>
+  <sys:String x:Key="DA_Help_Flag_Refund_Name">REFUND</sys:String>
+  <sys:String x:Key="DA_Help_Flag_Refund_Desc"> — in the refund window: the dust shown is the full recoverable craft cost. High priority.</sys:String>
+  <sys:String x:Key="DA_Help_Flag_Standard_Name">STANDARD</sys:String>
+  <sys:String x:Key="DA_Help_Flag_Standard_Desc"> — legal in current Standard. May still be useful; SafeOnly skips it by default.</sys:String>
+  <sys:String x:Key="DA_Help_Flag_Wild_Name">WILD</sys:String>
+  <sys:String x:Key="DA_Help_Flag_Wild_Desc"> — rotated out of Standard. Low opportunity cost.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Uncraftable">Cards the game WON'T let you disenchant</sys:String>
+  <sys:String x:Key="DA_Help_Uncraftable_Body">Detected automatically via heuristic over HearthstoneJSON's 'howToEarn' field. Includes: free Catch-Up Pack legendaries (e.g. Colifero the Artist), Reward Track rewards, achievement unlocks, BlizzCon goldens, class basic cards, tutorial rewards, Tavern Pass, promotional packs. Total: ~777 cards (validated against the full catalog).</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Owned">'Owned' column</sys:String>
+  <sys:String x:Key="DA_Help_Owned_Body_Pre">Compact format: </sys:String>
+  <sys:String x:Key="DA_Help_Owned_Body_Example">2R+1G+0D+1S</sys:String>
+  <sys:String x:Key="DA_Help_Owned_Body_Post"> = 2 Regular + 1 Golden + 0 Diamond + 1 Signature. Hover the cell to see the step-by-step calculation.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_TierWr">Tier and WR%</sys:String>
+  <sys:String x:Key="DA_Help_Tier_Label">Tier</sys:String>
+  <sys:String x:Key="DA_Help_Tier_Body_Pre"> — curated classification (S/A/B/C). The file </sys:String>
+  <sys:String x:Key="DA_Help_Tier_Body_File">data/meta_tiers.json</sys:String>
+  <sys:String x:Key="DA_Help_Tier_Body_Post"> is maintained by you (from sources like Vicious Syndicate, HSReplay). '?' = unclassified.</sys:String>
+  <sys:String x:Key="DA_Help_Wr_Label">WR%</sys:String>
+  <sys:String x:Key="DA_Help_Wr_Body"> — your personal win-rate (from HDT) when this card was in the deck. Minimum 20 games; blank if fewer.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Cart">Confirmation cart</sys:String>
+  <sys:String x:Key="DA_Help_Cart_Body">Tick the checkbox for each card you intend to disenchant. A bottom bar appears with the running total. Confirm to add it to the session history. The plugin doesn't disenchant for you — you must do that manually in Hearthstone.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Shortcuts">DataGrid shortcuts</sys:String>
+  <sys:String x:Key="DA_Help_Shortcut_DoubleClick">Double-click a row → opens the detail view with the full card art.</sys:String>
+  <sys:String x:Key="DA_Help_Shortcut_Hover">Hover a row → shows the card art as tooltip.</sys:String>
+  <sys:String x:Key="DA_Help_Shortcut_RightClick">Right-click → menu: add to 'Never suggest' (don't recommend this card again).</sys:String>
+  <sys:String x:Key="DA_Help_Shortcut_AutoAdvance">Tick checkbox + Auto-advance ON → automatically selects the next row.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Limitations">Known limitations</sys:String>
+  <sys:String x:Key="DA_Help_Limitation_Windows">Windows-only. Requires HDT running and Hearthstone open at the Collection screen at least once per session.</sys:String>
+  <sys:String x:Key="DA_Help_Limitation_NoAuto">The plugin does NOT disenchant for you — it is informational.</sys:String>
+  <sys:String x:Key="DA_Help_Limitation_NewPatterns">If Blizzard adds a new uncraftable-card pattern in a future expansion, the heuristic must be updated manually.</sys:String>
+
+  <sys:String x:Key="DA_Help_H_Sources">Data sources</sys:String>
+  <sys:String x:Key="DA_Help_Source_Hsj_Pre"></sys:String>
+  <sys:String x:Key="DA_Help_Source_Hsj_Code">api.hearthstonejson.com</sys:String>
+  <sys:String x:Key="DA_Help_Source_Hsj_Post"> — card catalog, set, rarity, howToEarn (en-US for the heuristic, your locale for names).</sys:String>
+  <sys:String x:Key="DA_Help_Source_HearthMirror">HearthMirror (via HDT) — live collection for the currently logged-in user.</sys:String>
+  <sys:String x:Key="DA_Help_Source_DeckList_Pre">HDT </sys:String>
+  <sys:String x:Key="DA_Help_Source_DeckList_Code">DeckList</sys:String>
+  <sys:String x:Key="DA_Help_Source_DeckList_Post"> — active decks, used to detect IN-DECK.</sys:String>
+  <sys:String x:Key="DA_Help_Source_DeckStats_Pre">HDT </sys:String>
+  <sys:String x:Key="DA_Help_Source_DeckStats_Code">DeckStatsList</sys:String>
+  <sys:String x:Key="DA_Help_Source_DeckStats_Post"> — game history, used to compute personal WR%.</sys:String>
+
+</ResourceDictionary>

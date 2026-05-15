@@ -1,0 +1,51 @@
+namespace DustAdvisor.Algorithm.Domain
+{
+    public sealed class DustItem
+    {
+        public string CardId { get; }
+        public string CardName { get; }
+        public Rarity Rarity { get; }
+        public int RegularToDust { get; }
+        public int GoldenToDust { get; }
+        public int DustGained { get; }
+        public bool InRefundWindow { get; }
+        public bool IsStandardLegal { get; }
+        public int InDeckCount { get; }
+        public string Class { get; }
+        public string MetaTier { get; }
+        public double? WinRate { get; }
+        public int OwnedRegular { get; }
+        public int OwnedGolden { get; }
+        public int OwnedDiamond { get; }
+        public int OwnedSignature { get; }
+        public int UnitRegular { get; }
+        public int UnitGolden { get; }
+
+        public DustItem(string cardId, string cardName, Rarity rarity,
+                        int regularToDust, int goldenToDust, int dustGained,
+                        bool inRefundWindow, bool isStandardLegal, int inDeckCount = 0,
+                        string @class = "NEUTRAL", string metaTier = "?", double? winRate = null,
+                        int ownedRegular = 0, int ownedGolden = 0, int ownedDiamond = 0, int ownedSignature = 0,
+                        int unitRegular = 0, int unitGolden = 0)
+        {
+            CardId = cardId;
+            CardName = cardName;
+            Rarity = rarity;
+            RegularToDust = regularToDust;
+            GoldenToDust = goldenToDust;
+            DustGained = dustGained;
+            InRefundWindow = inRefundWindow;
+            IsStandardLegal = isStandardLegal;
+            InDeckCount = inDeckCount;
+            Class = @class ?? "NEUTRAL";
+            MetaTier = string.IsNullOrEmpty(metaTier) ? "?" : metaTier;
+            WinRate = winRate;
+            OwnedRegular = ownedRegular;
+            OwnedGolden = ownedGolden;
+            OwnedDiamond = ownedDiamond;
+            OwnedSignature = ownedSignature;
+            UnitRegular = unitRegular;
+            UnitGolden = unitGolden;
+        }
+    }
+}
