@@ -29,16 +29,41 @@ namespace DustAdvisor.Hdt
             {
                 string locale = ReadHdtLocaleOrDefault();
                 DustAdvisor.Ui.Localization.EnsureLoaded(locale);
+                var sharedHttp = new System.Net.Http.HttpClient();
                 var http = new DustAdvisor.Data.CachingHttpFetcher(
-                    new DustAdvisor.Data.HttpClientFetcher(new System.Net.Http.HttpClient()),
+                    new DustAdvisor.Data.HttpClientFetcher(sharedHttp),
                     PluginPaths.CacheDir);
                 var hsj = new DustAdvisor.Data.HearthstoneJsonClient(http);
+                var refundAutoRepo = new DustAdvisor.Data.RefundAutoRepository();
                 var loader = new DustAdvisor.Data.DataLoader(
                     hsj,
                     new DustAdvisor.Data.UncraftableRepository(),
                     new DustAdvisor.Data.RefundRepository(),
                     new DustAdvisor.Data.NeverSuggestRepository(),
-                    new DustAdvisor.Data.MetaTierRepository());
+                    new DustAdvisor.Data.MetaTierRepository(),
+                    refundAutoRepo);
+
+                // Patch detection: HEAD-then-GET the latest enUS cards.collectible.json,
+                // diff against the previously cached build, write changed-card entries
+                // into refund_auto.json. Failures here must NEVER block the main flow.
+                try
+                {
+                    var patchFetcher = new DustAdvisor.Data.HttpClientPatchFetcher(sharedHttp);
+                    var tracker = new DustAdvisor.Data.PatchTracker(
+                        patchFetcher,
+                        refundAutoRepo,
+                        url: "https://api.hearthstonejson.com/v1/latest/enUS/cards.collectible.json",
+                        previousCachePath: PluginPaths.PreviousCardsFile,
+                        statePath: PluginPaths.PatchStateFile,
+                        refundAutoPath: PluginPaths.RefundAutoFile,
+                        refundWindow: System.TimeSpan.FromDays(14));
+                    await tracker.UpdateAsync(System.DateTimeOffset.UtcNow, System.Threading.CancellationToken.None).ConfigureAwait(true);
+                }
+                catch
+                {
+                    // Network errors, file-system issues, etc. Refund-auto stays empty;
+                    // user still gets the main collection plan.
+                }
 
                 var data = await loader.LoadAsync(
                     locale: locale,
@@ -47,7 +72,8 @@ namespace DustAdvisor.Hdt
                     neverSuggestPath: PluginPaths.NeverSuggestFile,
                     metaTiersPath: PluginPaths.MetaTiersFile,
                     now: System.DateTimeOffset.UtcNow,
-                    ct: System.Threading.CancellationToken.None);
+                    ct: System.Threading.CancellationToken.None,
+                    refundAutoPath: PluginPaths.RefundAutoFile);
 
                 var collection = await CollectionSnapshotReader.ReadAsync(data.Meta);
 
@@ -112,7 +138,7 @@ namespace DustAdvisor.Hdt
                     new DustAdvisor.Ui.HttpBinaryFetcher(),
                     PluginPaths.CardArtDir,
                     locale: locale);
-                var win = new DustAdvisor.Ui.DustAdvisorWindow(initialPlan, recompute, artCache, PluginPaths.NeverSuggestFile);
+                var win = new DustAdvisor.Ui.DustAdvisorWindow(initialPlan, recompute, artCache, PluginPaths.NeverSuggestFile, data.RefundDetails);
                 win.Title = missingMetaCount > 0
                     ? DustAdvisor.Ui.Localization.Format("DA_Title_WithMissing_Fmt", collection.Count, missingMetaCount)
                     : DustAdvisor.Ui.Localization.Format("DA_Title_Fmt", collection.Count);
