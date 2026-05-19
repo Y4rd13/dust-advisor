@@ -1,3 +1,12 @@
+# [1.1.0](https://github.com/Y4rd13/dust-advisor/compare/v1.0.0...v1.1.0) (2026-05-19)
+
+
+### Features
+
+* **data:** automatic refund-window detection via HearthstoneJSON build diff ([dcb1c8d](https://github.com/Y4rd13/dust-advisor/commit/dcb1c8d30fcf48cb80186ea8849d979b76b2d7a0))
+* **hdt:** wire PatchTracker into plugin startup ([f378883](https://github.com/Y4rd13/dust-advisor/commit/f3788836735958c27decdd47a92f04f5ea6d2495))
+* **ui:** refund-change tooltip + "Hide buffs" filter checkbox ([e3f4859](https://github.com/Y4rd13/dust-advisor/commit/e3f4859aaae4470edb4020c1136b1ddba9505b40))
+
 # 1.0.0 (2026-05-15)
 
 
