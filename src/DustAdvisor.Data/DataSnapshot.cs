@@ -9,17 +9,20 @@ namespace DustAdvisor.Data
         public IReadOnlyCollection<(string CardId, Premium Premium)> Uncraftable { get; }
         public IReadOnlyCollection<string> RefundWindow { get; }
         public IReadOnlyDictionary<string, string> MetaTiers { get; }
+        public IReadOnlyDictionary<string, RefundEntry> RefundDetails { get; }
 
         public DataSnapshot(
             IReadOnlyList<CardMeta> meta,
             IReadOnlyCollection<(string, Premium)> uncraftable,
             IReadOnlyCollection<string> refundWindow,
-            IReadOnlyDictionary<string, string> metaTiers = null)
+            IReadOnlyDictionary<string, string> metaTiers = null,
+            IReadOnlyDictionary<string, RefundEntry> refundDetails = null)
         {
             Meta = meta;
             Uncraftable = uncraftable;
             RefundWindow = refundWindow;
             MetaTiers = metaTiers ?? new Dictionary<string, string>();
+            RefundDetails = refundDetails ?? new Dictionary<string, RefundEntry>();
         }
     }
 }

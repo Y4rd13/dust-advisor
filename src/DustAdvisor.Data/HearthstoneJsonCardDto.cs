@@ -13,5 +13,14 @@ namespace DustAdvisor.Data
         [JsonProperty("howToEarn")] public string HowToEarn { get; set; }
         [JsonProperty("howToEarnGolden")] public string HowToEarnGolden { get; set; }
         [JsonProperty("cardClass")] public string CardClass { get; set; }
+
+        // Fields below are used by PatchDiffDetector to find balance-patch changes.
+        // Nullable because spells lack attack/health, weapons use durability, hero cards use armor.
+        [JsonProperty("cost")] public int? Cost { get; set; }
+        [JsonProperty("attack")] public int? Attack { get; set; }
+        [JsonProperty("health")] public int? Health { get; set; }
+        [JsonProperty("durability")] public int? Durability { get; set; }
+        [JsonProperty("armor")] public int? Armor { get; set; }
+        [JsonProperty("text")] public string Text { get; set; }
     }
 }

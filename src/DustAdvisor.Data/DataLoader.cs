@@ -13,14 +13,16 @@ namespace DustAdvisor.Data
         private readonly RefundRepository _refundRepo;
         private readonly NeverSuggestRepository _neverSuggestRepo;
         private readonly MetaTierRepository _metaTierRepo;
+        private readonly RefundAutoRepository _refundAutoRepo;
 
-        public DataLoader(IHearthstoneJsonClient hsj, UncraftableRepository uncraftableRepo, RefundRepository refundRepo, NeverSuggestRepository neverSuggestRepo, MetaTierRepository metaTierRepo)
+        public DataLoader(IHearthstoneJsonClient hsj, UncraftableRepository uncraftableRepo, RefundRepository refundRepo, NeverSuggestRepository neverSuggestRepo, MetaTierRepository metaTierRepo, RefundAutoRepository refundAutoRepo = null)
         {
             _hsj = hsj;
             _uncraftableRepo = uncraftableRepo;
             _refundRepo = refundRepo;
             _neverSuggestRepo = neverSuggestRepo;
             _metaTierRepo = metaTierRepo;
+            _refundAutoRepo = refundAutoRepo ?? new RefundAutoRepository();
         }
 
         public async Task<DataSnapshot> LoadAsync(
@@ -30,7 +32,8 @@ namespace DustAdvisor.Data
             string neverSuggestPath,
             string metaTiersPath,
             DateTimeOffset now,
-            CancellationToken ct)
+            CancellationToken ct,
+            string refundAutoPath = null)
         {
             var meta = await _hsj.LoadCollectibleAsync(locale, ct).ConfigureAwait(false);
             var heuristic = await _hsj.LoadHeuristicUncraftableAsync(locale, ct).ConfigureAwait(false);
@@ -42,9 +45,21 @@ namespace DustAdvisor.Data
             foreach (var h in heuristic) merged.Add(h);
             foreach (var n in neverSuggest) merged.Add(n);
 
-            var refund = _refundRepo.Load(refundPath, now);
+            var manualRefund = _refundRepo.Load(refundPath, now);
+            var refundUnion = new HashSet<string>(manualRefund);
+            var refundDetails = new Dictionary<string, RefundEntry>();
+
+            if (!string.IsNullOrEmpty(refundAutoPath))
+            {
+                foreach (var entry in _refundAutoRepo.Load(refundAutoPath, now))
+                {
+                    refundUnion.Add(entry.CardId);
+                    refundDetails[entry.CardId] = entry;
+                }
+            }
+
             var tiers = _metaTierRepo.Load(metaTiersPath);
-            return new DataSnapshot(meta, merged, refund, tiers);
+            return new DataSnapshot(meta, merged, refundUnion, tiers, refundDetails);
         }
     }
 }
