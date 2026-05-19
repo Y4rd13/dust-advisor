@@ -36,6 +36,8 @@
   <sys:String x:Key="DA_Tooltip_PremiumGolden">Mostrar cartas que recomiendan dustear copias Doradas. Off por defecto: las Doradas son tu mejor versión jugable.</sys:String>
   <sys:String x:Key="DA_Label_AutoAdvance">Auto-avance</sys:String>
   <sys:String x:Key="DA_Tooltip_AutoAdvance">Al marcar el checkbox de una carta, salta automáticamente a la siguiente fila tras un breve momento. Útil para procesar muchas cartas rápido.</sys:String>
+  <sys:String x:Key="DA_Label_HideBuffs">Ocultar buffs</sys:String>
+  <sys:String x:Key="DA_Tooltip_HideBuffs">En la ventana de refund, Blizzard devuelve el costo de craft completo por cualquier carta cambiada en el patch — incluyendo buffs. Marca esto para esconder cartas que recibieron buff (costo↓ o stat↑) y dejar solo nerfs.</sys:String>
   <sys:String x:Key="DA_Label_Search">Buscar:</sys:String>
   <sys:String x:Key="DA_Tooltip_Search">Filtra por nombre de carta (en el idioma de tu cliente Hearthstone).</sys:String>
 
@@ -111,6 +113,13 @@
   <sys:String x:Key="DA_WastedDust_Fmt">+{0} dust disponibles si cambias a MaxDust</sys:String>
   <sys:String x:Key="DA_Toast_Undid_Fmt">Deshecho: {0}</sys:String>
   <sys:String x:Key="DA_Toast_Redid_Fmt">Rehecho: {0}</sys:String>
+
+  <!-- Refund auto-detection (patch diff) -->
+  <sys:String x:Key="DA_RefundTooltip_Header">Refund auto-detectado (patch reciente):</sys:String>
+  <sys:String x:Key="DA_RefundChange_NerfFmt" xml:space="preserve">  • {0} {1} → {2} (nerf)</sys:String>
+  <sys:String x:Key="DA_RefundChange_BuffFmt" xml:space="preserve">  • {0} {1} → {2} (buff)</sys:String>
+  <sys:String x:Key="DA_RefundChange_NeutralFmt" xml:space="preserve">  • {0} {1} → {2}</sys:String>
+  <sys:String x:Key="DA_RefundTooltip_ExpiresFmt">Ventana de refund expira {0}</sys:String>
 
   <!-- Plugin.cs error messages -->
   <sys:String x:Key="DA_Error_NoCollection_Caption">Dust Advisor: sin datos de colección</sys:String>

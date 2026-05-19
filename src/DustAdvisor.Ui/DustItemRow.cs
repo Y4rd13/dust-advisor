@@ -2,6 +2,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using DustAdvisor.Algorithm.Domain;
+using DustAdvisor.Data;
 using DustAdvisor.Ui.Export;
 
 namespace DustAdvisor.Ui
@@ -24,6 +25,8 @@ namespace DustAdvisor.Ui
         public string WinRateDisplay { get; }
         public string OwnedSummary { get; }
         public string DustCalculation { get; }
+        public bool IsRefundBuff { get; }
+        public RefundEntry RefundEntry { get; }
 
         private BitmapImage _art;
         public BitmapImage Art
@@ -39,7 +42,7 @@ namespace DustAdvisor.Ui
             set { _isSelected = value; PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(IsSelected))); }
         }
 
-        public DustItemRow(DustItem item)
+        public DustItemRow(DustItem item, RefundEntry refundEntry = null)
         {
             CardId = item.CardId;
             Name = item.CardName;
@@ -48,6 +51,8 @@ namespace DustAdvisor.Ui
             GoldenToDust = item.GoldenToDust;
             DustGained = item.DustGained;
             InDeckCount = item.InDeckCount;
+            RefundEntry = refundEntry;
+            IsRefundBuff = refundEntry != null && refundEntry.AggregateDirection == PatchChangeDirection.Buff;
             // Flag precedence: IN-DECK > REFUND > STANDARD > WILD
             Flag = item.InDeckCount > 0 ? "IN-DECK"
                  : item.InRefundWindow ? "REFUND"
@@ -55,10 +60,32 @@ namespace DustAdvisor.Ui
                  : "WILD";
             OwnedSummary = BuildOwnedSummary(item);
             DustCalculation = BuildDustCalculation(item);
-            Why = BuildWhy(item) + "\n\n" + DustCalculation;
+            var refundTooltip = BuildRefundAutoTooltip(refundEntry);
+            Why = BuildWhy(item) + "\n\n" + DustCalculation + (string.IsNullOrEmpty(refundTooltip) ? "" : "\n\n" + refundTooltip);
             Class = item.Class;
             MetaTier = item.MetaTier;
             WinRateDisplay = item.WinRate.HasValue ? $"{item.WinRate.Value * 100:0}%" : "";
+        }
+
+        private static string BuildRefundAutoTooltip(RefundEntry entry)
+        {
+            if (entry == null || entry.Changes == null || entry.Changes.Count == 0) return null;
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine(Localization.Get("DA_RefundTooltip_Header"));
+            foreach (var c in entry.Changes)
+            {
+                string template;
+                switch (c.Direction)
+                {
+                    case PatchChangeDirection.Nerf: template = "DA_RefundChange_NerfFmt"; break;
+                    case PatchChangeDirection.Buff: template = "DA_RefundChange_BuffFmt"; break;
+                    default:                        template = "DA_RefundChange_NeutralFmt"; break;
+                }
+                sb.AppendLine(Localization.Format(template, c.FieldName, c.OldValue, c.NewValue));
+            }
+            sb.Append(Localization.Format("DA_RefundTooltip_ExpiresFmt",
+                entry.ExpiresUtc.ToLocalTime().ToString("yyyy-MM-dd")));
+            return sb.ToString();
         }
 
         private static string BuildOwnedSummary(DustItem item)

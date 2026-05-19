@@ -86,6 +86,8 @@
                     ToolTip="{DynamicResource DA_Tooltip_PremiumGolden}"/>
           <CheckBox x:Name="AutoAdvanceBox" Content="{DynamicResource DA_Label_AutoAdvance}" VerticalAlignment="Center" Margin="18,0,0,0" IsChecked="True"
                     ToolTip="{DynamicResource DA_Tooltip_AutoAdvance}"/>
+          <CheckBox x:Name="HideBuffsBox" Content="{DynamicResource DA_Label_HideBuffs}" VerticalAlignment="Center" Margin="14,0,0,0" IsChecked="False"
+                    ToolTip="{DynamicResource DA_Tooltip_HideBuffs}"/>
           <TextBlock Text="{DynamicResource DA_Label_Search}" VerticalAlignment="Center"
                      Foreground="{StaticResource FgSecondaryBrush}" Margin="18,0,6,0"/>
           <TextBox x:Name="SearchBox" Width="170" VerticalAlignment="Center"

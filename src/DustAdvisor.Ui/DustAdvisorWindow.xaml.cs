@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using DustAdvisor.Algorithm.Domain;
+using DustAdvisor.Data;
 using DustAdvisor.Ui.Export;
 
 namespace DustAdvisor.Ui
@@ -26,14 +27,17 @@ namespace DustAdvisor.Ui
         private readonly DustAdvisor.Ui.Export.UndoStack _undo = new DustAdvisor.Ui.Export.UndoStack(maxDepth: 100);
         private readonly DustAdvisor.Data.NeverSuggestRepository _neverRepo = new DustAdvisor.Data.NeverSuggestRepository();
         private readonly string _neverSuggestPath;
+        private readonly IReadOnlyDictionary<string, RefundEntry> _refundDetails;
 
-        public DustAdvisorWindow(DustPlan plan, Func<AdvisorOptions, DustPlan> recompute, CardArtCache artCache, string neverSuggestPath)
+        public DustAdvisorWindow(DustPlan plan, Func<AdvisorOptions, DustPlan> recompute, CardArtCache artCache, string neverSuggestPath,
+            IReadOnlyDictionary<string, RefundEntry> refundDetails = null)
         {
             InitializeComponent();
             _plan = plan;
             _recompute = recompute;
             _artCache = artCache;
             _neverSuggestPath = neverSuggestPath;
+            _refundDetails = refundDetails ?? new Dictionary<string, RefundEntry>();
             _toasts = new ToastHost(ToastContainer);
             StrategyBox.ItemsSource = new[] { Strategy.SafeOnly, Strategy.SafeOnlyUnused, Strategy.RotationImminent, Strategy.MaxDust, Strategy.RefundOnly };
             StrategyBox.SelectedItem = Strategy.SafeOnly;
@@ -48,7 +52,7 @@ namespace DustAdvisor.Ui
 
             RoutedEventHandler refilter = (s, e) => Render(_plan);
             FormatBox.SelectionChanged += (s, e) => Render(_plan);
-            foreach (var box in new[] { RarityCommonBox, RarityRareBox, RarityEpicBox, RarityLegendaryBox, ShowNormalBox, ShowGoldenBox })
+            foreach (var box in new[] { RarityCommonBox, RarityRareBox, RarityEpicBox, RarityLegendaryBox, ShowNormalBox, ShowGoldenBox, HideBuffsBox })
             {
                 box.Checked += refilter;
                 box.Unchecked += refilter;
@@ -116,7 +120,11 @@ namespace DustAdvisor.Ui
             WarningCountLabel.Text = plan.Warnings.Count > 0
                 ? Localization.Format("DA_Warning_Count_Fmt", plan.Warnings.Count)
                 : string.Empty;
-            ItemsGrid.ItemsSource = visible.Select(i => new DustItemRow(i)).ToList();
+            ItemsGrid.ItemsSource = visible.Select(i =>
+            {
+                _refundDetails.TryGetValue(i.CardId, out var refundEntry);
+                return new DustItemRow(i, refundEntry);
+            }).ToList();
             foreach (var row in (System.Collections.Generic.IEnumerable<DustItemRow>)ItemsGrid.ItemsSource)
             {
                 row.PropertyChanged += Row_PropertyChanged;
@@ -153,6 +161,8 @@ namespace DustAdvisor.Ui
             if (ClassDkBox.IsChecked == true) classes.Add("DEATHKNIGHT");
             if (ClassNeutralBox.IsChecked == true) classes.Add("NEUTRAL");
 
+            bool hideBuffs = HideBuffsBox.IsChecked == true;
+
             foreach (var i in items)
             {
                 if (!rarities.Contains(i.Rarity)) continue;
@@ -163,6 +173,8 @@ namespace DustAdvisor.Ui
                 if (!showNormal && !showGolden) continue;
                 if (searchText.Length > 0 && i.CardName.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) < 0) continue;
                 if (!classes.Contains(i.Class ?? "NEUTRAL")) continue;
+                if (hideBuffs && _refundDetails.TryGetValue(i.CardId, out var entry)
+                    && entry.AggregateDirection == PatchChangeDirection.Buff) continue;
                 yield return i;
             }
         }

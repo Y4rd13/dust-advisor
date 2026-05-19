@@ -36,6 +36,8 @@
   <sys:String x:Key="DA_Tooltip_PremiumGolden">Show cards where the plan recommends dusting Golden copies. Off by default — Goldens are your best playable copy.</sys:String>
   <sys:String x:Key="DA_Label_AutoAdvance">Auto-advance</sys:String>
   <sys:String x:Key="DA_Tooltip_AutoAdvance">When you tick a card's checkbox, automatically jump to the next row after a brief moment. Useful for processing many cards quickly.</sys:String>
+  <sys:String x:Key="DA_Label_HideBuffs">Hide buffs</sys:String>
+  <sys:String x:Key="DA_Tooltip_HideBuffs">In the refund window, Blizzard offers full craft cost back for any card changed by the patch — including buffs. Tick this to hide buffed cards (cost decrease or stat increase) and only show nerfs.</sys:String>
   <sys:String x:Key="DA_Label_Search">Search:</sys:String>
   <sys:String x:Key="DA_Tooltip_Search">Filter by card name (in your Hearthstone client's language).</sys:String>
 
@@ -123,6 +125,15 @@
   <!-- {0}=undo label -->
   <sys:String x:Key="DA_Toast_Undid_Fmt">Undid: {0}</sys:String>
   <sys:String x:Key="DA_Toast_Redid_Fmt">Redid: {0}</sys:String>
+
+  <!-- Refund auto-detection (patch diff) -->
+  <sys:String x:Key="DA_RefundTooltip_Header">Auto-detected refund (recent patch):</sys:String>
+  <!-- {0}=field, {1}=old, {2}=new -->
+  <sys:String x:Key="DA_RefundChange_NerfFmt" xml:space="preserve">  • {0} {1} → {2} (nerf)</sys:String>
+  <sys:String x:Key="DA_RefundChange_BuffFmt" xml:space="preserve">  • {0} {1} → {2} (buff)</sys:String>
+  <sys:String x:Key="DA_RefundChange_NeutralFmt" xml:space="preserve">  • {0} {1} → {2}</sys:String>
+  <!-- {0}=local date string -->
+  <sys:String x:Key="DA_RefundTooltip_ExpiresFmt">Refund window expires {0}</sys:String>
 
   <!-- Plugin.cs error messages -->
   <sys:String x:Key="DA_Error_NoCollection_Caption">Dust Advisor: no collection data</sys:String>
